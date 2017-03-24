@@ -6,15 +6,8 @@ public class C_Listado {
     //LISTADO DE DIRECCIONES DE IMAGENES
     //static String externo = "../";
     static String externo = "";
-    public String Ic_Login = externo+"src/Iconos/Login.png";
-    public String Ic_Cerrar = externo+"src/Iconos/Close.png";
-    public String Ic_Mesa = externo+"src/Iconos/Mesa.png";
-    public String Ic_MesaOcup = externo+"src/Iconos/MesaOcup.png";
-    public String Ic_User = externo+"src/Iconos/User.png";
-    public String Ic_Teclado = externo+"src/Iconos/Teclado.png";
-    public String Ic_Aceptar = externo+"src/Iconos/Aceptar.png";
-    public String F_Login = externo+"src/Fondos/I_FondoApp.jpg";
-    public String F_HomePage = externo+"src/Fondos/I_MenuApp2.jpg";
+    public String F_Login = externo+"src/Imagenes/Fondo.jpg";
+    public String F_HomePage = externo+"src/Imagenes/.....jpg";//MONTAR LA IMGAEN DE FONDO DEL SOFTWARE EN LA CARPETA IMAGENES
     
     //LISTADO DE TABLAS
     String bd = "aa_software";
