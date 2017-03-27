@@ -45,7 +45,12 @@ public class C_ArmarQuery {
             respuesta = "Select "
                     + " *"
                     + " From " + tabla.T_Usuarios
-                    + " Where Id = " + id
+                    + " ;";
+        } else if (metodo == "consultaLoggin"){
+            respuesta = "Select "
+                    + " *"
+                    + " From " + tabla.T_Usuarios
+                    + " Where estado = 1"
                     + " ;";
         }
         return respuesta;

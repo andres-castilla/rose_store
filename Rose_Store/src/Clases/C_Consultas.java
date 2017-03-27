@@ -32,12 +32,17 @@ public class C_Consultas {
     public String[] consulta_existencia(String query, Integer cant_datos, String datos[]) {
         dato_consulta = new String[cant_datos];
         try {
+            JOptionPane.showMessageDialog(null, "entra");
             conect = con.connection();
+            JOptionPane.showMessageDialog(null, "conecta");
             st = conect.createStatement();
+            JOptionPane.showMessageDialog(null, "ejecuta1");
             rs = st.executeQuery(query);
+            JOptionPane.showMessageDialog(null, "ejecuta2");
             while (rs.next()) {
                 for (int x = 0; x < cant_datos; x++) {
                     dato_consulta[x] = rs.getString(datos[x]);
+                    JOptionPane.showMessageDialog(null, dato_consulta[x]);
                 }
             }
             conect.close();

@@ -3,16 +3,35 @@ package Clases;
 
 import java.sql.*;
 
-
 public class C_Connection {
+    C_EditorTexto datosEditor = new C_EditorTexto();
+    
+    
+    
     public Connection connection(){
+        
+        int j=0;
+        String campo="";
+        String[] datosConex = new String[4];
+        String datos = datosEditor.cargarTxt("DatosConexion.txt");
+        char[] caracteres = datos.toCharArray();
+        for(int i=0; i<caracteres.length; i++){
+            if(caracteres[i]!='-'){
+                campo += String.valueOf(caracteres[i]);
+            }else{
+                datosConex[j] = campo;
+                campo="";
+                j++;
+            }
+        }
+        
         Connection conect = null;
         try{            
             String controlador = "com.mysql.jdbc.Driver";
             Class.forName(controlador).newInstance();
-            String conec = "jdbc:mysql://localhost:3306/project";
-            String user = "root";
-            String password = "Solution";
+            String conec = "jdbc:mysql://"+datosConex[0]+":3306/"+datosConex[3];
+            String user = datosConex[1];
+            String password = datosConex[2];
             conect = DriverManager.getConnection(conec,user,password);
         }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e){
             //JOptionPane.showMessageDialog(null,"Error al conectar con base de datos.\n Comuniquese con Area de Sistemas--"+e.getMessage());
