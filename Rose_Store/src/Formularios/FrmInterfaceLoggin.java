@@ -18,6 +18,7 @@ C_ArmarQuery query = new C_ArmarQuery();
         tamaño();
         LbFondo.setIcon(img.FondoLogin(LbFondo.getWidth(), LbFondo.getHeight()));
         LbAjustesConexion.setIcon(img.IconoAjuste(LbAjustesConexion.getWidth(), LbAjustesConexion.getHeight()));
+        
     }
     
     void tamaño(){
