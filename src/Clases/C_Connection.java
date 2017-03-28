@@ -2,6 +2,7 @@
 package Clases;
 
 import java.sql.*;
+import javax.swing.JOptionPane;
 
 public class C_Connection {
     C_EditorTexto datosEditor = new C_EditorTexto();
@@ -34,7 +35,7 @@ public class C_Connection {
             String password = datosConex[2];
             conect = DriverManager.getConnection(conec,user,password);
         }catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e){
-            //JOptionPane.showMessageDialog(null,"Error al conectar con base de datos.\n Comuniquese con Area de Sistemas--"+e.getMessage());
+            JOptionPane.showMessageDialog(null,"Error al conectar con base de datos.\n Comuniquese con Area de Sistemas--"+e.getMessage());
         }
     return conect;
     }    

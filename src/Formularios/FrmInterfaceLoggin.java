@@ -10,7 +10,7 @@ public class FrmInterfaceLoggin extends javax.swing.JFrame {
 C_CargarImagenes img = new C_CargarImagenes();
 C_VerificarCampos verificacion_campos = new C_VerificarCampos();
 C_Consultas consulta = new C_Consultas();
-C_ArmarQuery query = new C_ArmarQuery();
+String query;
 
 
     public FrmInterfaceLoggin() {
@@ -34,14 +34,18 @@ C_ArmarQuery query = new C_ArmarQuery();
         BtnIngresar.setLocation(TxtClave.getX() + 30, TxtClave.getY()+ TxtClave.getHeight()+20);
     }
     
-    void consultaUsuario(String usuario, String contrasena){
+    void logginUsuario(String usuario, String contrasena){
         String[] campos = {"usuario","contrasena"};
-        
         if(verificacion_campos.CamposLoggin(usuario, contrasena).equals("ok")){
-            String querys = "Select * from t_usuarios where estado = 1;";//query.Usuarios("consultaLoggin", campos, "1");
-            JOptionPane.showMessageDialog(null, querys);
-            String[] datos = consulta.consulta_existencia(querys, campos.length, campos);
-            JOptionPane.showMessageDialog(null, datos[0]);
+            query = "Select * from t_usuarios where estado = 1;";//query.Usuarios("consultaLoggin", campos, "1");
+            String[] datos = consulta.consulta_existencia(query, campos.length, campos);
+            if(usuario.equals(datos[0]) && contrasena.equals(datos[1])){
+                new FrmInterfaceMenu().setVisible(true);
+                dispose();
+            }else{
+                JOptionPane.showMessageDialog(null, "Usuario ó Clave invalida.\nDigite nuevamente la información");
+                TxtClave.setText("");
+            }
         }
     }
 
@@ -106,7 +110,7 @@ C_ArmarQuery query = new C_ArmarQuery();
     }//GEN-LAST:event_LbAjustesConexionMouseClicked
 
     private void BtnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnIngresarActionPerformed
-        consultaUsuario(TxtUsuario.getText(), new String(TxtClave.getPassword()));
+        logginUsuario(TxtUsuario.getText(), new String(TxtClave.getPassword()));
     }//GEN-LAST:event_BtnIngresarActionPerformed
 
     /**

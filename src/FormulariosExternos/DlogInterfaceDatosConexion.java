@@ -56,7 +56,13 @@ public class DlogInterfaceDatosConexion extends javax.swing.JDialog {
     }
     
     void guardarDatosConexion(String texto, String nombreArchivo){
-        datosEditor.nuevoTxt(texto, nombreArchivo);
+        String respuesta = datosEditor.nuevoTxt(texto, nombreArchivo);
+        if(respuesta.equals("ok")){
+            JOptionPane.showMessageDialog(null, "Datos de Conexion almacenados.\nGracias","Mensaje de Información",JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        }else{
+            JOptionPane.showMessageDialog(null, "Error: "+respuesta,"Mensaje de Error",JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 

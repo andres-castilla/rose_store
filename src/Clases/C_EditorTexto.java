@@ -8,19 +8,22 @@ import javax.swing.JOptionPane;
 
 
 public class C_EditorTexto {
-    
-    public void nuevoTxt(String texto, String nombreArchivo){
+    String datos="";
+    public String nuevoTxt(String texto, String nombreArchivo){
+        datos = "";
         try {
             FileWriter fichero = new FileWriter(nombreArchivo);
             fichero.write(texto);
             fichero.close();
+            datos = "ok";
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error: "+e.getMessage());
+            datos = e.getMessage();
         }
+        return datos;
     }
     
     public String cargarTxt(String nombreArchivo){
-        String datos="";
+        datos="";
         try {
             FileReader archivo = new FileReader(nombreArchivo);
             BufferedReader br = new BufferedReader(archivo);
