@@ -12,7 +12,7 @@ public class C_Consultas {
     Connection conect = null;
     Statement st = null;
     ResultSet rs = null;
-
+    
     public String consulta_existencia(String query) {
         validacion = "";
         try {
@@ -38,7 +38,7 @@ public class C_Consultas {
             st = conect.createStatement();
             JOptionPane.showMessageDialog(null, "ejecuta1");
             rs = st.executeQuery(query);
-            JOptionPane.showMessageDialog(null, "ejecuta2");
+            
             while (rs.next()) {
                 for (int x = 0; x < cant_datos; x++) {
                     dato_consulta[x] = rs.getString(datos[x]);
