@@ -1,12 +1,14 @@
 
 package rose_store;
 
+import Formularios.FrmInterfaceLoggin;
+
 
 public class Rose_Store {
 
 
     public static void main(String[] args) {
-        // TODO code application logic here
+        new FrmInterfaceLoggin().setVisible(true);
     }
     
 }
