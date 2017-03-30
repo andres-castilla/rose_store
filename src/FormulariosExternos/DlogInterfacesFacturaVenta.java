@@ -19,6 +19,8 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     
     void sizeItem(){
         this.setSize(TblaDetalleFacturaVenta.getWidth()+70, 500);
+        
+        
     }
 
 
@@ -46,7 +48,6 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         TblaDetalleFacturaVenta = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         LbTitulo = new javax.swing.JLabel();
         SepTitulo = new javax.swing.JSeparator();
         LbFondo = new javax.swing.JLabel();
@@ -164,10 +165,6 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         getContentPane().add(jLabel9);
         jLabel9.setBounds(450, 110, 70, 18);
 
-        jDateChooser1.setDateFormatString("yyyy/MM/dd");
-        getContentPane().add(jDateChooser1);
-        jDateChooser1.setBounds(660, 80, 140, 20);
-
         LbTitulo.setFont(new java.awt.Font("Constantia", 1, 18)); // NOI18N
         LbTitulo.setText("Factura de Venta");
         getContentPane().add(LbTitulo);
@@ -259,7 +256,6 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
