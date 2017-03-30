@@ -42,7 +42,7 @@ public class FrmInterfaceMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        DlogInterfacesFacturaVenta dialog = new DlogInterfacesFacturaVenta(new javax.swing.JFrame(), true);
+        DlogInterfaceMenu dialog = new DlogInterfaceMenu(new javax.swing.JFrame(), true);
         dialog.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
