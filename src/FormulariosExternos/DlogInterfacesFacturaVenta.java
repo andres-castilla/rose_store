@@ -1,51 +1,54 @@
-
 package FormulariosExternos;
 
-
-import Clases.C_CargarImagenes;
+import Clases.*;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.*;
 
-
 public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
-    C_CargarImagenes img = new C_CargarImagenes();
-DefaultTableModel model;//SE DEBE CREAR EL OBJETO DEBAJO DEL PUBLIC CLASS DEL FORMULARIO
-Integer i;
 
+    C_CargarImagenes img = new C_CargarImagenes();
+    C_Consultas consulta = new C_Consultas();
+    C_Listado listado = new C_Listado();
+    DefaultTableModel model;//SE DEBE CREAR EL OBJETO DEBAJO DEL PUBLIC CLASS DEL FORMULARIO
+    Integer i;
+    String query;
+    String[] datosConsulta = null;
 
     public DlogInterfacesFacturaVenta(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         parametrosIniciales();
     }
-    
-    void parametrosIniciales(){
+
+    void parametrosIniciales() {
         sizeItem();
-        parametrosCampos();
+        parametrosCamposClientesIni();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         LbNuevo.setIcon(img.IconoNuevo(LbNuevo.getWidth(), LbNuevo.getHeight()));
         LbAceptar.setIcon(img.IconoAceptar(LbAceptar.getWidth(), LbAceptar.getHeight()));
         LbFondo.setIcon(img.FondoHome(LbFondo.getWidth(), LbFondo.getHeight()));
-        TxtIdentificacion.setBackground(Color.LIGHT_GRAY);
+        TxtIdentificacion.setBackground(listado.colorBusqueda);
+        TxtAlmacen.setBackground(listado.colorBusqueda);
     }
-    
-    void sizeItem(){
+
+    void sizeItem() {
         sizeTable();
-        this.setSize(TblaDetalleFacturaVenta.getWidth()+70, 500);
+        this.setSize(TblaDetalleFacturaVenta.getWidth() + 70, 500);
         LbFondo.setSize(this.getWidth(), this.getHeight());
         SepTitulo.setSize(this.getWidth(), 10);
-        LbNuevo.setBounds(10, this.getHeight()-70, 25, 25);
-        LbNuevoArticulo.setBounds(LbNuevo.getX()+LbNuevo.getWidth()+2, LbNuevo.getY()+(LbNuevo.getHeight()/2), 80, 10);
-        LbAceptar.setBounds(TxtPrecioVenta.getX()+TxtPrecioVenta.getWidth()+5, TxtCodigo.getY()-5, 25, 25);
-        BtnLimpiar.setLocation(this.getWidth()/2-BtnLimpiar.getWidth()/2, this.getHeight()-70);
-        BtnAgregar.setLocation(BtnLimpiar.getX()+BtnLimpiar.getWidth()+20, BtnLimpiar.getY());
-        BtnCancelar.setLocation(BtnLimpiar.getX()-BtnCancelar.getWidth()-20, BtnLimpiar.getY());
-        
+        LbNuevo.setBounds(10, this.getHeight() - 70, 25, 25);
+        LbNuevoArticulo.setBounds(LbNuevo.getX() + LbNuevo.getWidth() + 2, LbNuevo.getY() + (LbNuevo.getHeight() / 2), 80, 10);
+        LbAceptar.setBounds(TxtPrecioVenta.getX() + TxtPrecioVenta.getWidth() + 5, TxtCodigo.getY() - 5, 25, 25);
+        BtnLimpiar.setLocation(this.getWidth() / 2 - BtnLimpiar.getWidth() / 2, this.getHeight() - 70);
+        BtnAgregar.setLocation(BtnLimpiar.getX() + BtnLimpiar.getWidth() + 20, BtnLimpiar.getY());
+        BtnCancelar.setLocation(BtnLimpiar.getX() - BtnCancelar.getWidth() - 20, BtnLimpiar.getY());
+
     }
-    
+
     void sizeTable() {
         String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "Dcto", "SubTotal"};
         model = new DefaultTableModel(null, titles);
@@ -75,8 +78,9 @@ Integer i;
         String[] aa = {};
         model.addRow(aa);
     }
-    
-    void parametrosCampos(){
+
+    void parametrosCamposClientesIni() {
+        TxtIdentificacion.setText("");
         LbCodigoId.setVisible(false);
         LbCodigoId.setText("0");
         LbClienteId.setVisible(false);
@@ -89,9 +93,45 @@ Integer i;
         TxtTelefono.setEnabled(false);
         TxtTelefono.setText("");
     }
-    void validacionNumerica(KeyEvent evt){
+    
+    void parametrosCamposClienteNuevo(){
+        LbClienteId.setText("0");
+        TxtNombre.setEnabled(true);
+        TxtCorreo.setEnabled(true);
+        TxtTelefono.setEnabled(true);
+        TxtNombre.requestFocus();
+    }
+            
+
+    void validacionNumerica(KeyEvent evt) {
         char car = evt.getKeyChar();
-        if(( car<'0' || car>'9' )) evt.consume();
+        if ((car < '0' || car > '9')) {
+            evt.consume();
+        }
+    }
+    
+    void consultaCliente(String identificacion){
+        query="Select"
+                + " *"
+                + " From"
+                + " "+listado.T_Clientes
+                + " where identificacion = "+identificacion
+                + " And"
+                + " estado = 1";
+        String resultado = consulta.consulta_existencia(query);
+        if(resultado.equals("")){
+            JOptionPane.showMessageDialog(null, "Cliente no encontrado.","Mensaje Información", JOptionPane.INFORMATION_MESSAGE);
+            parametrosCamposClienteNuevo();
+        }else{
+            String[] campos = {"id,nombre,correo,telefono"};
+            datosConsulta = consulta.consulta_existencia(query, campos.length, campos);
+            LbClienteId.setText(datosConsulta[0]);
+            TxtNombre.setText(datosConsulta[1]);
+            TxtCorreo.setText(datosConsulta[2]);
+            TxtTelefono.setText(datosConsulta[3]);
+            TxtAlmacen.requestFocus();
+        }
+            
     }
 
     @SuppressWarnings("unchecked")
@@ -173,6 +213,12 @@ Integer i;
         TxtIdentificacion.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         TxtIdentificacion.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         TxtIdentificacion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TxtIdentificacionKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                TxtIdentificacionKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 TxtIdentificacionKeyTyped(evt);
             }
@@ -222,6 +268,7 @@ Integer i;
         jLabel13.setBounds(690, 110, 70, 18);
 
         TxtAlmacen.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        TxtAlmacen.setToolTipText("Presione F2");
         getContentPane().add(TxtAlmacen);
         TxtAlmacen.setBounds(760, 110, 100, 20);
 
@@ -397,6 +444,18 @@ Integer i;
     private void TxtPrecioVentaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtPrecioVentaKeyTyped
         validacionNumerica(evt);
     }//GEN-LAST:event_TxtPrecioVentaKeyTyped
+
+    private void TxtIdentificacionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdentificacionKeyPressed
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+            consultaCliente(TxtIdentificacion.getText());
+        }else if(evt.getKeyCode()==KeyEvent.VK_BACK_SPACE || evt.getKeyCode()==KeyEvent.VK_DELETE){
+            parametrosCamposClientesIni();
+        }
+    }//GEN-LAST:event_TxtIdentificacionKeyPressed
+
+    private void TxtIdentificacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdentificacionKeyReleased
+        
+    }//GEN-LAST:event_TxtIdentificacionKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

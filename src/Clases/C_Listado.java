@@ -1,6 +1,8 @@
 
 package Clases;
 
+import java.awt.Color;
+
 
 public class C_Listado {
     //LISTADO DE DIRECCIONES DE IMAGENES
@@ -11,6 +13,7 @@ public class C_Listado {
     public String I_Ajuste = externo+"src/Imagenes/Ico_Ajustes.png";
     public String I_Nuevo = externo+"src/Imagenes/Ico_Nuevo.png";
     public String I_Aceptar = externo+"src/Imagenes/Ico_Aceptar.png";
+    public Color colorBusqueda = new Color(192,192,192);
     
     //LISTADO DE TABLAS
     String bd = "aa_software";
