@@ -8,7 +8,9 @@ public class C_Listado {
     static String externo = "";
     public String F_Login = externo+"src/Imagenes/Fondo.jpg";
     public String F_HomePage = externo+"src/Imagenes/FondoHome.jpg";//MONTAR LA IMGAEN DE FONDO DEL SOFTWARE EN LA CARPETA IMAGENES
-    public String I_Ajuste = externo+"src/Imagenes/Ajustes.png";
+    public String I_Ajuste = externo+"src/Imagenes/Ico_Ajustes.png";
+    public String I_Nuevo = externo+"src/Imagenes/Ico_Nuevo.png";
+    public String I_Aceptar = externo+"src/Imagenes/Ico_Aceptar.png";
     
     //LISTADO DE TABLAS
     String bd = "aa_software";

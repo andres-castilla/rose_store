@@ -16,6 +16,21 @@ public class C_CargarImagenes {
         return icono;
     }
     
+    
+    public Icon IconoNuevo(int W, int H){
+        ImageIcon icoUsuario = new ImageIcon(Ic.I_Nuevo);
+        icono = new ImageIcon(icoUsuario.getImage().getScaledInstance(W, H, Image.SCALE_DEFAULT));
+        return icono;
+    }
+    
+    
+    public Icon IconoAceptar(int W, int H){
+        ImageIcon icoUsuario = new ImageIcon(Ic.I_Aceptar);
+        icono = new ImageIcon(icoUsuario.getImage().getScaledInstance(W, H, Image.SCALE_DEFAULT));
+        return icono;
+    }
+    
+    
     public Icon FondoLogin(int W, int H){
         ImageIcon icoUsuario = new ImageIcon(Ic.F_Login);
         icono = new ImageIcon(icoUsuario.getImage().getScaledInstance(W, H, Image.SCALE_DEFAULT));
