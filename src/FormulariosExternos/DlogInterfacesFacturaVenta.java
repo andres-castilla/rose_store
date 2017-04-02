@@ -1,8 +1,8 @@
 package FormulariosExternos;
 
 import Clases.*;
-import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.*;
@@ -12,6 +12,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     C_CargarImagenes img = new C_CargarImagenes();
     C_Consultas consulta = new C_Consultas();
     C_Listado listado = new C_Listado();
+    Date fechaActual;
     DefaultTableModel model;//SE DEBE CREAR EL OBJETO DEBAJO DEL PUBLIC CLASS DEL FORMULARIO
     Integer i;
     String query;
@@ -26,6 +27,9 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     void parametrosIniciales() {
         sizeItem();
         parametrosCamposClientesIni();
+        cargarFechaActual();
+        consultaNuneroFactura();
+        parametrosCamposItemNuevo();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         LbNuevo.setIcon(img.IconoNuevo(LbNuevo.getWidth(), LbNuevo.getHeight()));
@@ -33,16 +37,17 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         LbFondo.setIcon(img.FondoHome(LbFondo.getWidth(), LbFondo.getHeight()));
         TxtIdentificacion.setBackground(listado.colorBusqueda);
         TxtAlmacen.setBackground(listado.colorBusqueda);
+        TxtCodigo.setBackground(listado.colorBusqueda);
     }
 
     void sizeItem() {
         sizeTable();
-        this.setSize(TblaDetalleFacturaVenta.getWidth() + 70, 500);
+        this.setSize(TablaDetalleFacturaVenta.getWidth() + 70, 500);
         LbFondo.setSize(this.getWidth(), this.getHeight());
         SepTitulo.setSize(this.getWidth(), 10);
         LbNuevo.setBounds(10, this.getHeight() - 70, 25, 25);
         LbNuevoArticulo.setBounds(LbNuevo.getX() + LbNuevo.getWidth() + 2, LbNuevo.getY() + (LbNuevo.getHeight() / 2), 80, 10);
-        LbAceptar.setBounds(TxtPrecioVenta.getX() + TxtPrecioVenta.getWidth() + 5, TxtCodigo.getY() - 5, 25, 25);
+        LbAceptar.setBounds(TxtPrecioVentaUnit.getX() + TxtPrecioVentaUnit.getWidth() + 5, TxtCodigo.getY() - 5, 25, 25);
         BtnLimpiar.setLocation(this.getWidth() / 2 - BtnLimpiar.getWidth() / 2, this.getHeight() - 70);
         BtnAgregar.setLocation(BtnLimpiar.getX() + BtnLimpiar.getWidth() + 20, BtnLimpiar.getY());
         BtnCancelar.setLocation(BtnLimpiar.getX() - BtnCancelar.getWidth() - 20, BtnLimpiar.getY());
@@ -50,33 +55,39 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     }
 
     void sizeTable() {
-        String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "Dcto", "SubTotal"};
+        String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "Precio Unit", "Dcto", "SubTotal"};
         model = new DefaultTableModel(null, titles);
-        TblaDetalleFacturaVenta.setModel(model);
+        TablaDetalleFacturaVenta.setModel(model);
         //SE ESTABLECE EL TAMAÑO DE LAS COLUMNAS
-        Integer[] size = {20, 150, 50, 10, 50};
+        Integer[] size = {20, 200, 20, 20, 10, 50};
         for (i = 1; i < titles.length; i++) {
-            TblaDetalleFacturaVenta.getColumnModel().getColumn(i).setPreferredWidth(size[i - 1]);
+            TablaDetalleFacturaVenta.getColumnModel().getColumn(i).setPreferredWidth(size[i - 1]);
         }
-        TblaDetalleFacturaVenta.getColumnModel().getColumn(0).setResizable(false);
-        TblaDetalleFacturaVenta.getColumnModel().getColumn(0).setMaxWidth(0);
-        TblaDetalleFacturaVenta.getColumnModel().getColumn(0).setMinWidth(0);
-        TblaDetalleFacturaVenta.getColumnModel().getColumn(0).setPreferredWidth(0);
+        TablaDetalleFacturaVenta.getColumnModel().getColumn(0).setResizable(false);
+        TablaDetalleFacturaVenta.getColumnModel().getColumn(0).setMaxWidth(0);
+        TablaDetalleFacturaVenta.getColumnModel().getColumn(0).setMinWidth(0);
+        TablaDetalleFacturaVenta.getColumnModel().getColumn(0).setPreferredWidth(0);
         //SE CENTRAN LOS TITULOS DE LA TABLA
         DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
         tcr.setHorizontalAlignment(SwingConstants.CENTER);
         for (i = 1; i < titles.length; i++) {
-            TblaDetalleFacturaVenta.getColumnModel().getColumn(i).setHeaderRenderer(tcr);
+            TablaDetalleFacturaVenta.getColumnModel().getColumn(i).setHeaderRenderer(tcr);
         }
         //SE ESTABLECE UBICACION DEL TEXTO EN LAS DIFERENTES FILAS DE LA TABLA
         DefaultTableCellRenderer tcr2 = new DefaultTableCellRenderer();
         tcr2.setHorizontalAlignment(SwingConstants.RIGHT);
-        TblaDetalleFacturaVenta.getColumnModel().getColumn(3).setCellRenderer(tcr2);
-        TblaDetalleFacturaVenta.getColumnModel().getColumn(4).setCellRenderer(tcr2);
-        TblaDetalleFacturaVenta.getTableHeader().setReorderingAllowed(false);//SE BLOQUEA QUE NO SE PUEDAN MOVER LAS COLUMNAS
-        TblaDetalleFacturaVenta.setRowHeight(20);//ANCHO DE FILA
-        String[] aa = {};
-        model.addRow(aa);
+        for (i = 3; i < titles.length; i++) {
+            TablaDetalleFacturaVenta.getColumnModel().getColumn(i).setCellRenderer(tcr2);
+        }
+        TablaDetalleFacturaVenta.getTableHeader().setReorderingAllowed(false);//SE BLOQUEA QUE NO SE PUEDAN MOVER LAS COLUMNAS
+        TablaDetalleFacturaVenta.setRowHeight(20);//ANCHO DE FILA
+//        String[] aa = {};
+//        model.addRow(aa);
+    }
+
+    void cargarFechaActual() {
+        fechaActual = new Date();
+        DateFechaActual.setDate(fechaActual);
     }
 
     void parametrosCamposClientesIni() {
@@ -93,36 +104,47 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         TxtTelefono.setEnabled(false);
         TxtTelefono.setText("");
     }
-    
-    void parametrosCamposClienteNuevo(){
+
+    void parametrosCamposClienteNuevo() {
         LbClienteId.setText("0");
         TxtNombre.setEnabled(true);
         TxtCorreo.setEnabled(true);
         TxtTelefono.setEnabled(true);
         TxtNombre.requestFocus();
     }
-            
 
-    void validacionNumerica(KeyEvent evt) {
+    void parametrosCamposItemNuevo() {
+        LbCodigoId.setText("0");
+        TxtCodigo.setText("");
+        TxtDescripcion.setText("");
+        TxtCantidad.setText("");
+        TxtPrecioVentaUnit.setText("");
+        TxtDescuentoUnit.setText("");
+        TxtSubTotal.setText("0");
+        TxtDescuentoTotal.setText("0");
+        TxtTotal.setText("0");
+    }
+
+    void validacionCamposNumericos(KeyEvent evt) {
         char car = evt.getKeyChar();
         if ((car < '0' || car > '9')) {
             evt.consume();
         }
     }
-    
-    void consultaCliente(String identificacion){
-        query="Select"
+
+    void consultaCliente(String identificacion) {
+        query = "Select"
                 + " *"
                 + " From"
-                + " "+listado.T_Clientes
-                + " where identificacion = "+identificacion
+                + " " + listado.T_Clientes
+                + " where identificacion = " + identificacion
                 + " And"
-                + " estado = 1";
+                + " estado = 1;";
         String resultado = consulta.consulta_existencia(query);
-        if(resultado.equals("")){
-            JOptionPane.showMessageDialog(null, "Cliente no encontrado.","Mensaje Información", JOptionPane.INFORMATION_MESSAGE);
+        if (resultado.equals("")) {
+            JOptionPane.showMessageDialog(null, "Cliente no encontrado.", "Mensaje Información", JOptionPane.INFORMATION_MESSAGE);
             parametrosCamposClienteNuevo();
-        }else{
+        } else {
             String[] campos = {"id,nombre,correo,telefono"};
             datosConsulta = consulta.consulta_existencia(query, campos.length, campos);
             LbClienteId.setText(datosConsulta[0]);
@@ -131,13 +153,84 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
             TxtTelefono.setText(datosConsulta[3]);
             TxtAlmacen.requestFocus();
         }
-            
+
+    }
+
+    void consultaNuneroFactura() {
+        query = "Select"
+                + " count(id) as numeroFacturas"
+                + " From"
+                + " " + listado.T_FacturaVenta
+                + " ;";
+        String campos = "numeroFacturas";
+        datosConsulta = consulta.consulta_existencia(query, 1, campos);
+        String numeroFactura = String.valueOf(Integer.parseInt(datosConsulta[0]) + 1);
+        TxtNumeroFactura.setText(numeroFactura);
+    }
+
+    void agregarItem_Tabla() {
+        int cantidad = Integer.parseInt(TxtCantidad.getText());
+        int descuento = Integer.parseInt(TxtDescuentoUnit.getText());
+        int precio_unitario = Integer.parseInt(TxtPrecioVentaUnit.getText());
+        int subtotal = (cantidad * precio_unitario) - descuento;
+
+        String[] nuevaItem = {
+            LbCodigoId.getText(),
+            TxtCodigo.getText(),
+            TxtDescripcion.getText(),
+            TxtCantidad.getText(),
+            TxtPrecioVentaUnit.getText(),
+            TxtDescuentoUnit.getText(),
+            String.valueOf(subtotal)
+        };
+        model.addRow(nuevaItem);
+        parametrosCamposItemNuevo();
+        calcularTotal(TablaDetalleFacturaVenta.getRowCount());
+    }
+
+    void opcionesPopUp(String metodo, Integer numeroFila) {
+        //String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "PrecioUnit", "Dcto", "SubTotal"};
+        if (numeroFila < 0) {
+            JOptionPane.showMessageDialog(null, "Debe Seleccionar Item", "Mensaje de Información", JOptionPane.INFORMATION_MESSAGE);
+        } else if (metodo == "eliminar") {
+            model.removeRow(numeroFila);
+            calcularTotal(TablaDetalleFacturaVenta.getRowCount());
+        } else if (metodo == "modificar") {
+            LbCodigoId.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 0).toString());
+            TxtCodigo.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 1).toString());
+            TxtDescripcion.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 2).toString());
+            TxtCantidad.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 3).toString());
+            TxtPrecioVentaUnit.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 4).toString());
+            TxtDescuentoUnit.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 5).toString());
+            model.removeRow(numeroFila);
+            calcularTotal(TablaDetalleFacturaVenta.getRowCount());
+        }
+    }
+
+    void calcularTotal(Integer cantidadFilas) {
+        int subtotal = 0;
+        int descuentoTotal = 0;
+        int total = 0;
+            for (i = 0; i < cantidadFilas; i++) {
+                int cantidad = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 3).toString());
+                int precioUnit = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 4).toString());
+                subtotal += (cantidad * precioUnit);
+                int descuento = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 5).toString());
+                descuentoTotal += descuento;
+            }
+            total = subtotal - descuentoTotal;
+            TxtSubTotal.setText(String.valueOf(subtotal));
+            TxtDescuentoTotal.setText(String.valueOf(descuentoTotal));
+            TxtTotal.setText(String.valueOf(total));
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        PopUpEditarItemTable = new javax.swing.JPopupMenu();
+        MenuEditar = new javax.swing.JMenuItem();
+        MenuEliminar = new javax.swing.JMenuItem();
         LbTitulo = new javax.swing.JLabel();
         SepTitulo = new javax.swing.JSeparator();
         LbNumeroFactura = new javax.swing.JLabel();
@@ -163,10 +256,10 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         jLabel14 = new javax.swing.JLabel();
         TxtDescuentoUnit = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        TxtPrecioVenta = new javax.swing.JTextField();
+        TxtPrecioVentaUnit = new javax.swing.JTextField();
         LbAceptar = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        TblaDetalleFacturaVenta = new javax.swing.JTable();
+        TablaDetalleFacturaVenta = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         TAreaObservacion = new javax.swing.JTextArea();
         jLabel10 = new javax.swing.JLabel();
@@ -183,6 +276,24 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         LbNuevo = new javax.swing.JLabel();
         LbNuevoArticulo = new javax.swing.JLabel();
         LbFondo = new javax.swing.JLabel();
+
+        MenuEditar.setFont(new java.awt.Font("Constantia", 0, 14)); // NOI18N
+        MenuEditar.setText("Editar");
+        MenuEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenuEditarActionPerformed(evt);
+            }
+        });
+        PopUpEditarItemTable.add(MenuEditar);
+
+        MenuEliminar.setFont(new java.awt.Font("Constantia", 0, 14)); // NOI18N
+        MenuEliminar.setText("Eliminar");
+        MenuEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenuEliminarActionPerformed(evt);
+            }
+        });
+        PopUpEditarItemTable.add(MenuEliminar);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -215,9 +326,6 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         TxtIdentificacion.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 TxtIdentificacionKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                TxtIdentificacionKeyReleased(evt);
             }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 TxtIdentificacionKeyTyped(evt);
@@ -325,35 +433,42 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         getContentPane().add(jLabel8);
         jLabel8.setBounds(670, 160, 80, 18);
 
-        TxtPrecioVenta.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
-        TxtPrecioVenta.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        TxtPrecioVenta.addKeyListener(new java.awt.event.KeyAdapter() {
+        TxtPrecioVentaUnit.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        TxtPrecioVentaUnit.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        TxtPrecioVentaUnit.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TxtPrecioVentaUnitKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                TxtPrecioVentaKeyTyped(evt);
+                TxtPrecioVentaUnitKeyTyped(evt);
             }
         });
-        getContentPane().add(TxtPrecioVenta);
-        TxtPrecioVenta.setBounds(750, 160, 80, 20);
+        getContentPane().add(TxtPrecioVentaUnit);
+        TxtPrecioVentaUnit.setBounds(750, 160, 80, 20);
+
+        LbAceptar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                LbAceptarMouseClicked(evt);
+            }
+        });
         getContentPane().add(LbAceptar);
         LbAceptar.setBounds(830, 160, 30, 30);
 
-        TblaDetalleFacturaVenta = new javax.swing.JTable(){
+        TablaDetalleFacturaVenta = new javax.swing.JTable(){
             public boolean isCellEditable(int rows, int colum){
                 return false;
             }
         };
-        TblaDetalleFacturaVenta.setModel(new javax.swing.table.DefaultTableModel(
+        TablaDetalleFacturaVenta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(TblaDetalleFacturaVenta);
+        TablaDetalleFacturaVenta.setComponentPopupMenu(PopUpEditarItemTable);
+        jScrollPane1.setViewportView(TablaDetalleFacturaVenta);
 
         getContentPane().add(jScrollPane1);
         jScrollPane1.setBounds(30, 210, 830, 110);
@@ -395,6 +510,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
 
         TxtTotal.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         TxtTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        TxtTotal.setText("0");
         getContentPane().add(TxtTotal);
         TxtTotal.setBounds(720, 390, 140, 21);
 
@@ -430,32 +546,46 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void TxtIdentificacionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdentificacionKeyTyped
-        validacionNumerica(evt);
+        validacionCamposNumericos(evt);
     }//GEN-LAST:event_TxtIdentificacionKeyTyped
 
     private void TxtCantidadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCantidadKeyTyped
-        validacionNumerica(evt);
+        validacionCamposNumericos(evt);
     }//GEN-LAST:event_TxtCantidadKeyTyped
 
     private void TxtDescuentoUnitKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtDescuentoUnitKeyTyped
-        validacionNumerica(evt);
+        validacionCamposNumericos(evt);
     }//GEN-LAST:event_TxtDescuentoUnitKeyTyped
 
-    private void TxtPrecioVentaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtPrecioVentaKeyTyped
-        validacionNumerica(evt);
-    }//GEN-LAST:event_TxtPrecioVentaKeyTyped
+    private void TxtPrecioVentaUnitKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtPrecioVentaUnitKeyTyped
+        validacionCamposNumericos(evt);
+    }//GEN-LAST:event_TxtPrecioVentaUnitKeyTyped
 
     private void TxtIdentificacionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdentificacionKeyPressed
-        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             consultaCliente(TxtIdentificacion.getText());
-        }else if(evt.getKeyCode()==KeyEvent.VK_BACK_SPACE || evt.getKeyCode()==KeyEvent.VK_DELETE){
+        } else if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
             parametrosCamposClientesIni();
         }
     }//GEN-LAST:event_TxtIdentificacionKeyPressed
 
-    private void TxtIdentificacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdentificacionKeyReleased
-        
-    }//GEN-LAST:event_TxtIdentificacionKeyReleased
+    private void LbAceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LbAceptarMouseClicked
+        agregarItem_Tabla();
+    }//GEN-LAST:event_LbAceptarMouseClicked
+
+    private void TxtPrecioVentaUnitKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtPrecioVentaUnitKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            agregarItem_Tabla();
+        }
+    }//GEN-LAST:event_TxtPrecioVentaUnitKeyPressed
+
+    private void MenuEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuEditarActionPerformed
+        opcionesPopUp("modificar", TablaDetalleFacturaVenta.getSelectedRow());
+    }//GEN-LAST:event_MenuEditarActionPerformed
+
+    private void MenuEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuEliminarActionPerformed
+        opcionesPopUp("eliminar", TablaDetalleFacturaVenta.getSelectedRow());
+    }//GEN-LAST:event_MenuEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -471,9 +601,12 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private javax.swing.JLabel LbNuevoArticulo;
     private javax.swing.JLabel LbNumeroFactura;
     private javax.swing.JLabel LbTitulo;
+    private javax.swing.JMenuItem MenuEditar;
+    private javax.swing.JMenuItem MenuEliminar;
+    private javax.swing.JPopupMenu PopUpEditarItemTable;
     private javax.swing.JSeparator SepTitulo;
     private javax.swing.JTextArea TAreaObservacion;
-    private javax.swing.JTable TblaDetalleFacturaVenta;
+    private javax.swing.JTable TablaDetalleFacturaVenta;
     private javax.swing.JTextField TxtAlmacen;
     private javax.swing.JTextField TxtCantidad;
     private javax.swing.JTextField TxtCodigo;
@@ -484,7 +617,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private javax.swing.JTextField TxtIdentificacion;
     private javax.swing.JTextField TxtNombre;
     private javax.swing.JTextField TxtNumeroFactura;
-    private javax.swing.JTextField TxtPrecioVenta;
+    private javax.swing.JTextField TxtPrecioVentaUnit;
     private javax.swing.JTextField TxtSubTotal;
     private javax.swing.JTextField TxtTelefono;
     private javax.swing.JTextField TxtTotal;

@@ -1,6 +1,7 @@
 
 package Formularios;
 import FormulariosExternos.*;
+import java.sql.Date;
 
 public class FrmInterfaceMenu extends javax.swing.JFrame {
 
