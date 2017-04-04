@@ -386,6 +386,11 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         jLabel15.setBounds(30, 160, 50, 18);
 
         TxtCodigo.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        TxtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TxtCodigoKeyPressed(evt);
+            }
+        });
         getContentPane().add(TxtCodigo);
         TxtCodigo.setBounds(80, 160, 60, 20);
 
@@ -586,6 +591,18 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private void MenuEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuEliminarActionPerformed
         opcionesPopUp("eliminar", TablaDetalleFacturaVenta.getSelectedRow());
     }//GEN-LAST:event_MenuEliminarActionPerformed
+
+    private void TxtCodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCodigoKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_F2) {
+            DlogInterfaceBusqueda dlogBusqueda = new DlogInterfaceBusqueda(new javax.swing.JFrame(), true);
+            String[] campos = {"id","Codigo","Descripcion"};
+            Integer[] size = {100,300};
+            Integer[] columnas = null;
+            dlogBusqueda.sizeTable(campos, size, 0, columnas);
+            dlogBusqueda.setVisible(true);
+            
+        }
+    }//GEN-LAST:event_TxtCodigoKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
