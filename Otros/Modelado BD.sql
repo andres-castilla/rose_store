@@ -63,7 +63,7 @@ CREATE TABLE t_almacenes (
 DROP TABLE IF EXISTS t_clase_productos;
 CREATE TABLE t_clase_productos (
   id int NOT NULL AUTO_INCREMENT,
-  descripcion int not null,
+  descripcion varchar(100) not null,
   estado int not null,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB;

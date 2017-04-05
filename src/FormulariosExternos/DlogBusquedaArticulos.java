@@ -1,39 +1,42 @@
 package FormulariosExternos;
-
+import Clases.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class DlogInterfaceBusqueda extends javax.swing.JDialog {
-
+public class DlogBusquedaArticulos extends javax.swing.JDialog {
+    C_Listado listado = new C_Listado();
+    C_Consultas consulta = new C_Consultas();
     DefaultTableModel model;
-    String[] titulos = null;
     Integer i;
+    String query;
+    String[] titulos;
+    String[][] datosConsulta = null;
 
-    public DlogInterfaceBusqueda(java.awt.Frame parent, boolean modal) {
+    public DlogBusquedaArticulos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         parametrosIniciales();
     }
-    
-    void parametrosIniciales(){
+
+    void parametrosIniciales() {
         sizeItem();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         RBotonOpTodos.setSelected(true);
     }
-    
-    void sizeItem(){
+
+    void sizeItem() {
         this.setSize(500, 450);
+        sizeTable();
     }
 
-    public void sizeTable(String[] titles, Integer[] size, Integer ubicacion, Integer[] columnasUbicar) {
-        //String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "Precio Unit", "Dcto", "SubTotal"};
+    public void sizeTable() {
+        String[] titles = {"id", "Codigo", "Descripcion"};
         titulos = titles;
         model = new DefaultTableModel(null, titles);
         TablaResultadoBusqueda.setModel(model);
-        
         //SE ESTABLECE EL TAMAÑO DE LAS COLUMNAS
-        //Integer[] size = {20, 200, 20, 20, 10, 50};
+        Integer[] size = {100, 300};
         for (i = 1; i < titles.length; i++) {
             TablaResultadoBusqueda.getColumnModel().getColumn(i).setPreferredWidth(size[i - 1]);
         }
@@ -49,34 +52,40 @@ public class DlogInterfaceBusqueda extends javax.swing.JDialog {
             TablaResultadoBusqueda.getColumnModel().getColumn(i).setHeaderRenderer(tcr);
         }
         //SE ESTABLECE UBICACION DEL TEXTO EN LAS DIFERENTES FILAS DE LA TABLA
-        if (ubicacion == 1) {
-            DefaultTableCellRenderer tcr2 = new DefaultTableCellRenderer();
-            tcr2.setHorizontalAlignment(SwingConstants.RIGHT);
-            for (i = 0; i < columnasUbicar.length; i++) {
-                TablaResultadoBusqueda.getColumnModel().getColumn(columnasUbicar[i]).setCellRenderer(tcr2);
-            }
-        }
+//        DefaultTableCellRenderer tcr2 = new DefaultTableCellRenderer();
+//        tcr2.setHorizontalAlignment(SwingConstants.RIGHT);
+//        for (i = 0; i < columnasUbicar.length; i++) {
+//            TablaResultadoBusqueda.getColumnModel().getColumn(columnasUbicar[i]).setCellRenderer(tcr2);
+//        }
         TablaResultadoBusqueda.getTableHeader().setReorderingAllowed(false);//SE BLOQUEA QUE NO SE PUEDAN MOVER LAS COLUMNAS
         TablaResultadoBusqueda.setRowHeight(20);//ANCHO DE FILA
-        String[] aa = {};
-        model.addRow(aa);
+//        String[] aa = {};
+//        model.addRow(aa);
     }
-    
-    void seleccionOpcion(){
+
+    void seleccionOpcion() {
         CmbCampoBuscar.removeAllItems();
         String respuesta = "";
-        if(RBotonOpTodos.isSelected()){
+        if (RBotonOpTodos.isSelected()) {
             CmbCampoBuscar.setVisible(false);
             TxtDatoBusqueda.setVisible(false);
-        }else if(RBotonOpEspecifica.isSelected()){
-                    for(i=0;i<titulos.length;i++){
-                        CmbCampoBuscar.addItem(titulos[i]);
-                    }
+            consultaDatos();
+        } else if (RBotonOpEspecifica.isSelected()) {
+            for (i = 0; i < titulos.length; i++) {
+                CmbCampoBuscar.addItem(titulos[i]);
+            }
             CmbCampoBuscar.setVisible(true);
             TxtDatoBusqueda.setVisible(true);
         }
-        
-        //return respuesta;
+    }
+    
+    void consultaDatos(){
+        query = "select count(id) as filas from "+listado.T_Productos+" Where estado = 1;";
+        String[] filas = consulta.consulta_existencia(query,1, "filas");
+        int cantfilas = Integer.parseInt(filas[0]);
+        query = "Select * from "+listado.T_Productos;
+        String[] campos = {"id","codigo","descripcion"};
+        datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
     }
 
     @SuppressWarnings("unchecked")
@@ -158,7 +167,7 @@ public class DlogInterfaceBusqueda extends javax.swing.JDialog {
     }//GEN-LAST:event_RBotonOpTodosPropertyChange
 
     private void RBotonOpEspecificaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_RBotonOpEspecificaPropertyChange
-        
+
     }//GEN-LAST:event_RBotonOpEspecificaPropertyChange
 
 

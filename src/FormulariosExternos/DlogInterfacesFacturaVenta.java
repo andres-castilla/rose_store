@@ -594,13 +594,8 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
 
     private void TxtCodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCodigoKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_F2) {
-            DlogInterfaceBusqueda dlogBusqueda = new DlogInterfaceBusqueda(new javax.swing.JFrame(), true);
-            String[] campos = {"id","Codigo","Descripcion"};
-            Integer[] size = {100,300};
-            Integer[] columnas = null;
-            dlogBusqueda.sizeTable(campos, size, 0, columnas);
+            DlogBusquedaArticulos dlogBusqueda = new DlogBusquedaArticulos(new javax.swing.JFrame(), true);
             dlogBusqueda.setVisible(true);
-            
         }
     }//GEN-LAST:event_TxtCodigoKeyPressed
 
