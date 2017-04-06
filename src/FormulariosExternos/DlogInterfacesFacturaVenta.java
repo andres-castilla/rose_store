@@ -537,6 +537,11 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
 
         LbNuevo.setToolTipText("");
         LbNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        LbNuevo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                LbNuevoMouseClicked(evt);
+            }
+        });
         getContentPane().add(LbNuevo);
         LbNuevo.setBounds(0, 420, 40, 30);
 
@@ -598,6 +603,11 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
             dlogBusqueda.setVisible(true);
         }
     }//GEN-LAST:event_TxtCodigoKeyPressed
+
+    private void LbNuevoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LbNuevoMouseClicked
+        DlogInterfaceArticulos dialog = new DlogInterfaceArticulos(new javax.swing.JFrame(), true);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_LbNuevoMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

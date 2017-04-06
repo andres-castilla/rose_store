@@ -3,7 +3,7 @@ import Clases.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class DlogBusquedaArticulos extends javax.swing.JDialog {
+public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
     C_Listado listado = new C_Listado();
     C_Consultas consulta = new C_Consultas();
     DefaultTableModel model;
@@ -12,7 +12,7 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
     String[] titulos;
     String[][] datosConsulta = null;
 
-    public DlogBusquedaArticulos(java.awt.Frame parent, boolean modal) {
+    public DlogBusquedaClaseArticulos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         parametrosIniciales();
@@ -31,24 +31,24 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
     }
 
     public void sizeTable() {
-        String[] titles = {"id", "Codigo", "Descripcion"};
+        String[] titles = {"Codigo", "Descripcion"};
         titulos = titles;
         model = new DefaultTableModel(null, titles);
         TablaResultadoBusqueda.setModel(model);
         //SE ESTABLECE EL TAMAÑO DE LAS COLUMNAS
-        Integer[] size = {100, 300};
-        for (i = 1; i < titles.length; i++) {
-            TablaResultadoBusqueda.getColumnModel().getColumn(i).setPreferredWidth(size[i - 1]);
+        Integer[] size = {80, 300};
+        for (i = 0; i < titles.length; i++) {
+            TablaResultadoBusqueda.getColumnModel().getColumn(i).setPreferredWidth(size[i]);
         }
-        TablaResultadoBusqueda.getColumnModel().getColumn(0).setResizable(false);
-        TablaResultadoBusqueda.getColumnModel().getColumn(0).setMaxWidth(0);
-        TablaResultadoBusqueda.getColumnModel().getColumn(0).setMinWidth(0);
-        TablaResultadoBusqueda.getColumnModel().getColumn(0).setPreferredWidth(0);
+//        TablaResultadoBusqueda.getColumnModel().getColumn(0).setResizable(false);
+//        TablaResultadoBusqueda.getColumnModel().getColumn(0).setMaxWidth(0);
+//        TablaResultadoBusqueda.getColumnModel().getColumn(0).setMinWidth(0);
+//        TablaResultadoBusqueda.getColumnModel().getColumn(0).setPreferredWidth(0);
         TablaResultadoBusqueda.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //SE CENTRAN LOS TITULOS DE LA TABLA
         DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
         tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        for (i = 1; i < titles.length; i++) {
+        for (i = 0; i < titles.length; i++) {
             TablaResultadoBusqueda.getColumnModel().getColumn(i).setHeaderRenderer(tcr);
         }
         //SE ESTABLECE UBICACION DEL TEXTO EN LAS DIFERENTES FILAS DE LA TABLA
@@ -78,19 +78,17 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
             TxtDatoBusqueda.setVisible(true);
         }
     }
-    
     void lipiarConsulta(){
         for(i=0;i<TablaResultadoBusqueda.getRowCount();i++){
             model.removeRow(0);
         }
     }
-    
     void consultaDatos(){
-        query = "select count(id) as filas from "+listado.T_Productos+" Where estado = 1;";
+        query = "select count(id) as filas from "+listado.T_ClaseProductos+" Where estado = 1;";
         String[] filas = consulta.consulta_existencia(query,1, "filas");
         int cantfilas = Integer.parseInt(filas[0]);
-        query = "Select * from "+listado.T_Productos;
-        String[] campos = {"id","codigo","descripcion"};
+        query = "Select * from "+listado.T_ClaseProductos;
+        String[] campos = {"id","descripcion"};
         datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
         String[] fila = new String[campos.length];
         lipiarConsulta();
@@ -111,7 +109,6 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
             dispose();
         }
     }
-    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -124,7 +121,7 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
         TxtDatoBusqueda = new javax.swing.JTextField();
         RBotonOpTodos = new javax.swing.JRadioButton();
         RBotonOpEspecifica = new javax.swing.JRadioButton();
-        jButton1 = new javax.swing.JButton();
+        BtnSeleccionar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -179,10 +176,15 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
         getContentPane().add(RBotonOpEspecifica);
         RBotonOpEspecifica.setBounds(20, 50, 137, 25);
 
-        jButton1.setFont(new java.awt.Font("Constantia", 0, 14)); // NOI18N
-        jButton1.setText("Aceptar");
-        getContentPane().add(jButton1);
-        jButton1.setBounds(383, 390, 90, 27);
+        BtnSeleccionar.setFont(new java.awt.Font("Constantia", 0, 14)); // NOI18N
+        BtnSeleccionar.setText("Seleccionar");
+        BtnSeleccionar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnSeleccionarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(BtnSeleccionar);
+        BtnSeleccionar.setBounds(363, 390, 110, 27);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -195,15 +197,19 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
 
     }//GEN-LAST:event_RBotonOpEspecificaPropertyChange
 
+    private void BtnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSeleccionarActionPerformed
+        seleccion();
+    }//GEN-LAST:event_BtnSeleccionarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BtnSeleccionar;
     private javax.swing.JComboBox<String> CmbCampoBuscar;
     private javax.swing.JRadioButton RBotonOpEspecifica;
     private javax.swing.JRadioButton RBotonOpTodos;
     private javax.swing.JTable TablaResultadoBusqueda;
     private javax.swing.JTextField TxtDatoBusqueda;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
