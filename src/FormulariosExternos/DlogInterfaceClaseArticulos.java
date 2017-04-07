@@ -11,6 +11,7 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
     C_Consultas consulta = new C_Consultas();
     C_Agregar agregar = new C_Agregar();
     Integer estado;
+    String query;
 
     public DlogInterfaceClaseArticulos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -20,7 +21,7 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
 
     void parametrosIniciales() {
         sizeItem();
-        cancelar();
+        opCancelar();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         LbFondo.setIcon(img.FondoHome(LbFondo.getWidth(), LbFondo.getHeight()));
@@ -39,7 +40,7 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         BtnActualizar.setLocation(BtnModificar.getX(), BtnNuevo.getY());
     }
 
-    void cancelar() {
+    void opCancelar() {
         TxtNombreClase.setText("");
         TxtNombreClase.setEnabled(false);
         CmbEstado.setSelectedIndex(0);
@@ -50,9 +51,11 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         BtnBuscar.setEnabled(true);
         BtnModificar.setEnabled(false);
         BtnActualizar.setVisible(false);
+        LbIdClase.setText("0");
     }
 
-    void nuevo() {
+    void opNuevo() {
+        opCancelar();
         TxtNombreClase.setEnabled(true);
         CmbEstado.setEnabled(true);
         BtnNuevo.setEnabled(false);
@@ -63,30 +66,73 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         TxtNombreClase.requestFocus();
     }
     
-    void estados(){
-        if(CmbEstado.getSelectedItem().equals("Activo")){
+    void opModificar(){
+        TxtNombreClase.setEnabled(true);
+        CmbEstado.setEnabled(true);
+        BtnNuevo.setEnabled(false);
+        BtnBuscar.setEnabled(false);
+        BtnCancelar.setEnabled(true);
+        BtnModificar.setEnabled(false);
+        BtnModificar.setVisible(false);
+        BtnActualizar.setEnabled(true);
+        BtnActualizar.setVisible(true);
+    }
+
+    void estados() {
+        if (CmbEstado.getSelectedItem().equals("Activo")) {
             estado = 1;
-        }else{
+        } else {
             estado = 0;
         }
     }
-    
-    
+
     void agregar() {
         if (verificarCampos.CamposClaseArticulos(TxtNombreClase.getText(), CmbEstado.getSelectedItem().toString()).equals("ok")) {
             estados();
-            String campos = 
-                    "descripcion,"
+            String campos
+                    = "descripcion,"
                     + "estado";
-            String valores = 
-                    TxtNombreClase.getText()+"',"
-                    + "'"+estado;
+            String valores
+                    = TxtNombreClase.getText() + "',"
+                    + "'" + estado;
             String respuesta = agregar.agregar(listado.T_ClaseProductos, campos, valores);
-            if(respuesta.equals("ok")){
+            if (respuesta.equals("ok")) {
                 JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
-                cancelar();
+                opCancelar();
             }
         }
+    }
+
+    void buscar(String idclase) {
+        if (!idclase.equals("0")) {
+            query = "Select * from " + listado.T_ClaseProductos + " where id = '" + idclase + "';";
+            String[] campos = {"descripcion", "estado"};
+            String[] datosClase = consulta.consulta_existencia(query, campos.length, campos);
+            TxtNombreClase.setText(datosClase[0]);
+            if(datosClase[1].equals("0")){
+                CmbEstado.setSelectedIndex(2);
+            }else{
+                CmbEstado.setSelectedIndex(1);
+            }
+            BtnModificar.setEnabled(true);
+        }
+    }
+    
+    void actualizar(String idclase){
+        estados();
+        query = "Update"
+                + " "+listado.T_ClaseProductos
+                + " Set"
+                + " descripcion = '"+TxtNombreClase.getText()+"',"
+                + " estado = '"+estado+"'"
+                + " where id = '"+idclase+"';";
+        JOptionPane.showMessageDialog(null, query);
+    
+//        String respuesta = agregar.agregar(listado.T_ClaseProductos, campos, valores);
+//            if (respuesta.equals("ok")) {
+//                JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
+//                opCancelar();
+//            }
     }
 
     @SuppressWarnings("unchecked")
@@ -170,18 +216,40 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
 
         BtnBuscar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnBuscar.setText("Buscar");
+        BtnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnBuscarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnBuscar);
         BtnBuscar.setBounds(280, 150, 90, 25);
 
         BtnModificar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnModificar.setText("Modificar");
+        BtnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnModificarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnModificar);
         BtnModificar.setBounds(370, 150, 90, 25);
 
         BtnActualizar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnActualizar.setText("Actualizar");
+        BtnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnActualizarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnActualizar);
         BtnActualizar.setBounds(390, 170, 90, 25);
+
+        LbIdClase.setText("0");
+        LbIdClase.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                LbIdClasePropertyChange(evt);
+            }
+        });
         getContentPane().add(LbIdClase);
         LbIdClase.setBounds(460, 0, 20, 10);
         getContentPane().add(LbFondo);
@@ -191,58 +259,35 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnNuevoActionPerformed
-        nuevo();
+        opNuevo();
     }//GEN-LAST:event_BtnNuevoActionPerformed
 
     private void BtnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCancelarActionPerformed
-        cancelar();
+        opCancelar();
     }//GEN-LAST:event_BtnCancelarActionPerformed
 
     private void BtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnGuardarActionPerformed
         agregar();
     }//GEN-LAST:event_BtnGuardarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Windows".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DlogInterfaceClaseArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DlogInterfaceClaseArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DlogInterfaceClaseArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DlogInterfaceClaseArticulos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void LbIdClasePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_LbIdClasePropertyChange
+        buscar(LbIdClase.getText());
+    }//GEN-LAST:event_LbIdClasePropertyChange
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DlogInterfaceClaseArticulos dialog = new DlogInterfaceClaseArticulos(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+    private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
+        DlogBusquedaClaseArticulos busqueda = new DlogBusquedaClaseArticulos(new javax.swing.JFrame(), true);
+        busqueda.LbNombreFormulario.setText("clase");
+        busqueda.setVisible(true);
+    }//GEN-LAST:event_BtnBuscarActionPerformed
+
+    private void BtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnActualizarActionPerformed
+        actualizar(LbIdClase.getText());
+    }//GEN-LAST:event_BtnActualizarActionPerformed
+
+    private void BtnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnModificarActionPerformed
+        opModificar();
+    }//GEN-LAST:event_BtnModificarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnActualizar;
@@ -253,7 +298,7 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
     private javax.swing.JButton BtnNuevo;
     private javax.swing.JComboBox<String> CmbEstado;
     private javax.swing.JLabel LbFondo;
-    private javax.swing.JLabel LbIdClase;
+    public static javax.swing.JLabel LbIdClase;
     private javax.swing.JLabel LbTitulo;
     private javax.swing.JSeparator SepTitulo;
     private javax.swing.JTextField TxtNombreClase;

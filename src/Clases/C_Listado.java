@@ -13,6 +13,7 @@ public class C_Listado {
     public String I_Ajuste = externo+"src/Imagenes/Ico_Ajustes.png";
     public String I_Nuevo = externo+"src/Imagenes/Ico_Nuevo.png";
     public String I_Aceptar = externo+"src/Imagenes/Ico_Aceptar.png";
+    public String I_Buscar = externo+"src/Imagenes/Ico_Buscar.png";
     public Color colorBusqueda = new Color(192,192,192);
     
     //LISTADO DE TABLAS

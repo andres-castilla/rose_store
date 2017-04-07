@@ -1,9 +1,11 @@
 package FormulariosExternos;
+
 import Clases.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
 public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
+
     C_Listado listado = new C_Listado();
     C_Consultas consulta = new C_Consultas();
     DefaultTableModel model;
@@ -78,35 +80,48 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
             TxtDatoBusqueda.setVisible(true);
         }
     }
-    void lipiarConsulta(){
-        for(i=0;i<TablaResultadoBusqueda.getRowCount();i++){
+
+    void limpiarTabla() {
+        for (i = 0; i < TablaResultadoBusqueda.getRowCount(); i++) {
             model.removeRow(0);
         }
     }
-    void consultaDatos(){
-        query = "select count(id) as filas from "+listado.T_ClaseProductos+" Where estado = 1;";
-        String[] filas = consulta.consulta_existencia(query,1, "filas");
+
+    void consultaDatos() {
+        query = "select count(id) as filas from " + listado.T_ClaseProductos + ";";
+        String[] filas = consulta.consulta_existencia(query, 1, "filas");
         int cantfilas = Integer.parseInt(filas[0]);
-        query = "Select * from "+listado.T_ClaseProductos;
-        String[] campos = {"id","descripcion"};
-        datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
-        String[] fila = new String[campos.length];
-        lipiarConsulta();
-        for(i=0;i<cantfilas;i++){
-            for(int j=0;j<campos.length;j++){
-                fila[j] = datosConsulta[i][j];
+        if (cantfilas > 0) {
+            query = "Select * from " + listado.T_ClaseProductos;
+            String[] campos = {"id", "descripcion"};
+            datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
+            String[] fila = new String[campos.length];
+            limpiarTabla();
+            for (i = 0; i < cantfilas; i++) {
+                for (int j = 0; j < campos.length; j++) {
+                    fila[j] = datosConsulta[i][j];
+                }
+                model.addRow(fila);
             }
-            model.addRow(fila);
         }
     }
-    
-    void seleccion(){
-        if(TablaResultadoBusqueda.getSelectedRow()<0){
-            JOptionPane.showMessageDialog(null, "Debe Seleccionar una fila","Mensaje Información",JOptionPane.INFORMATION_MESSAGE);
-        }else{
+
+    void seleccion() {
+        if (TablaResultadoBusqueda.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(null, "Debe Seleccionar una fila", "Mensaje Información", JOptionPane.INFORMATION_MESSAGE);
+        } else {
             int fila = TablaResultadoBusqueda.getSelectedRow();
-            DlogInterfaceArticulos.TxtIdClase.setText(TablaResultadoBusqueda.getValueAt(fila, 0).toString());
-            dispose();
+            String id = TablaResultadoBusqueda.getValueAt(fila, 0).toString();
+            if (LbNombreFormulario.getText().equals("articulo")) {
+                DlogInterfaceArticulos.LbIdClase.setText(id);
+                dispose();
+            } else if (LbNombreFormulario.getText().equals("clase")) {
+                DlogInterfaceClaseArticulos.LbIdClase.setText(id);
+                dispose();
+            } else if (LbNombreFormulario.getText().equals("lista")) {
+                DlogInterfaceListaPrecio.LbIdClase.setText(id);
+                dispose();
+            }
         }
     }
 
@@ -122,6 +137,7 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
         RBotonOpTodos = new javax.swing.JRadioButton();
         RBotonOpEspecifica = new javax.swing.JRadioButton();
         BtnSeleccionar = new javax.swing.JButton();
+        LbNombreFormulario = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -185,6 +201,8 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
         });
         getContentPane().add(BtnSeleccionar);
         BtnSeleccionar.setBounds(363, 390, 110, 27);
+        getContentPane().add(LbNombreFormulario);
+        LbNombreFormulario.setBounds(470, 0, 0, 0);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -205,6 +223,7 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnSeleccionar;
     private javax.swing.JComboBox<String> CmbCampoBuscar;
+    public static javax.swing.JLabel LbNombreFormulario;
     private javax.swing.JRadioButton RBotonOpEspecifica;
     private javax.swing.JRadioButton RBotonOpTodos;
     private javax.swing.JTable TablaResultadoBusqueda;

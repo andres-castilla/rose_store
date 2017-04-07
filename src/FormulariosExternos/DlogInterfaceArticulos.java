@@ -13,7 +13,6 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
     C_Agregar agregar = new C_Agregar();
     Integer estado;
     String query;
-    String[] datos = null;
 
     public DlogInterfaceArticulos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -23,7 +22,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
 
     void parametrosIniciales() {
         sizeItem();
-        cancelar();
+        opCancelar();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         LbFondo.setIcon(img.FondoHome(LbFondo.getWidth(), LbFondo.getHeight()));
@@ -42,7 +41,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnActualizar.setLocation(BtnModificar.getX(), BtnNuevo.getY());
     }
 
-    void cancelar() {
+    void opCancelar() {
         TxtIdClase.setText("");
         TxtIdClase.setEnabled(false);
         TxtNombreClase.setText("");
@@ -64,7 +63,8 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         LbIdClase.setText("0");
     }
 
-    void nuevo() {
+    void opNuevo() {
+        opCancelar();
         TxtIdClase.setEnabled(true);
         TxtCodigo.setEnabled(true);
         TxtDescripcion.setEnabled(true);
@@ -76,36 +76,61 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnModificar.setEnabled(false);
         TxtIdClase.requestFocus();
     }
-
-    void consultaClase(String idclase) {
-        if (!idclase.equals("0")) {
-            String campo = "descripcion";
-            query = "Select " + campo + " from " + listado.T_ClaseProductos + " Where id = " + idclase + " and estado = 1";
-            datos = consulta.consulta_existencia(query, campo.length(), campo);
-            TxtNombreClase.setText(datos[0]);
-        }
-    }
     
-    void consultaArticulo(String idarticulo){
-        if (!idarticulo.equals("0")) {
-            String campo = "codigo,descripcion,ultimo_costo,id_clase,estado";
-            query = "Select " + campo + " from " + listado.T_ClaseProductos + " Where id = " + idarticulo + " and estado = 1";
-            datos = consulta.consulta_existencia(query, campo.length(), campo);
-            TxtNombreClase.setText(datos[0]);
-        }
+    void opModificar(){
+        TxtIdClase.setEnabled(true);
+        TxtDescripcion.setEnabled(true);
+        CmbEstado.setEnabled(true);
+        BtnNuevo.setEnabled(false);
+        BtnBuscar.setEnabled(false);
+        BtnCancelar.setEnabled(true);
+        BtnModificar.setEnabled(false);
+        BtnModificar.setVisible(false);
+        BtnActualizar.setEnabled(true);
+        BtnActualizar.setVisible(true);
+        
     }
 
-    void estados(){
-        if(CmbEstado.getSelectedItem().equals("Activo")){
+    void estados() {
+        if (CmbEstado.getSelectedItem().equals("Activo")) {
             estado = 1;
-        }else{
+        } else {
             estado = 0;
         }
     }
     
+    void buscarClase(String idclase) {
+        if (!idclase.equals("0")) {
+            String campo = "descripcion";
+            query = "Select " + campo + " from " + listado.T_ClaseProductos + " Where id = " + idclase + " and estado = 1";
+            String[] datosClase = consulta.consulta_existencia(query, campo.length(), campo);
+            TxtNombreClase.setText(datosClase[0]);
+            TxtCodigo.requestFocus();
+        }
+    }
+
+    void buscarArticulo(String idarticulo) {
+        if (!idarticulo.equals("0")) {
+            query = "Select * from " + listado.T_Productos + " Where id = '" + idarticulo + "';";
+            String[] campos = {"codigo", "descripcion", "ultimo_costo", "id_clase", "estado"};
+            String[] datosArticulo = consulta.consulta_existencia(query, campos.length, campos);
+            TxtCodigo.setText(datosArticulo[0]);
+            TxtDescripcion.setText(datosArticulo[1]);
+            TxtUltimoCosto.setText(datosArticulo[2]);
+            TxtIdClase.setText(datosArticulo[3]);
+            LbIdClase.setText(datosArticulo[3]);
+            if(datosArticulo[4].equals("0")){
+                CmbEstado.setSelectedIndex(2);
+            }else{
+                CmbEstado.setSelectedIndex(1);
+            }
+            BtnModificar.setEnabled(true);
+        }
+    }
+
     void guardar() {
         if (verificacionCampos.CamposArticulo(TxtIdClase.getText(), TxtCodigo.getText(), TxtDescripcion.getText(), CmbEstado.getSelectedItem().toString()).equals("ok")) {
-            query = "Select codigo from " + listado.T_Productos + " where codigo = '" + TxtCodigo.getText()+"'";
+            query = "Select codigo from " + listado.T_Productos + " where codigo = '" + TxtCodigo.getText() + "'";
             if (!consulta.consulta_existencia(query).equals("")) {
                 JOptionPane.showMessageDialog(null, "Codigo de Articulo ya se encuentra Registrado", "Mensaje Error", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -123,10 +148,28 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
                 String respuesta = agregar.agregar(listado.T_Productos, campos, valores);
                 if (respuesta.equals("ok")) {
                     JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
-                    cancelar();
+                    opCancelar();
                 }
             }
         }
+    }
+    
+    void actualizar(String idarticulo){
+        estados();
+        query = "Update"
+                + " "+listado.T_Productos
+                + " Set"
+                + " descripcion = '"+TxtDescripcion.getText()+"',"
+                + " id_clase = '"+TxtIdClase.getText()+"',"
+                + " estado = '"+estado+"'"
+                + " where id = '"+idarticulo+"';";
+        JOptionPane.showMessageDialog(null, query);
+    
+//        String respuesta = agregar.agregar(listado.T_ClaseProductos, campos, valores);
+//            if (respuesta.equals("ok")) {
+//                JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
+//                opCancelar();
+//            }
     }
 
     @SuppressWarnings("unchecked")
@@ -250,6 +293,11 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
 
         BtnCancelar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnCancelar.setText("Cancelar");
+        BtnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnCancelarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnCancelar);
         BtnCancelar.setBounds(200, 240, 90, 25);
 
@@ -265,11 +313,21 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
 
         BtnModificar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnModificar.setText("Modificar");
+        BtnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnModificarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnModificar);
         BtnModificar.setBounds(380, 240, 90, 25);
 
         BtnActualizar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnActualizar.setText("Actualizar");
+        BtnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnActualizarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnActualizar);
         BtnActualizar.setBounds(400, 260, 90, 25);
         getContentPane().add(LbFondo);
@@ -291,18 +349,19 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
             }
         });
         getContentPane().add(LbIdArticulo);
-        LbIdArticulo.setBounds(370, 0, 34, 14);
+        LbIdArticulo.setBounds(370, 0, 34, 20);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void BtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnNuevoActionPerformed
-        nuevo();
+        opNuevo();
     }//GEN-LAST:event_BtnNuevoActionPerformed
 
     private void LbIdClasePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_LbIdClasePropertyChange
         if (!LbIdClase.getText().equals("0")) {
-            consultaClase(LbIdClase.getText());
+            buscarClase(LbIdClase.getText());
+            TxtIdClase.setText(LbIdClase.getText());
         }
     }//GEN-LAST:event_LbIdClasePropertyChange
 
@@ -317,20 +376,21 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         if (TxtIdClase.getText().isEmpty()) {
             LbIdClase.setText("0");
             TxtNombreClase.setText("");
-        }else{
-        String idclase = "";
-        idclase += TxtIdClase.getText();
-        LbIdClase.setText(idclase);
+        } else {
+            String idclase = "";
+            idclase += TxtIdClase.getText();
+            LbIdClase.setText(idclase);
         }
 
     }//GEN-LAST:event_TxtIdClaseKeyReleased
 
     private void TxtIdClaseKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdClaseKeyPressed
-        if(evt.getKeyCode()==KeyEvent.VK_F2){
-            DlogBusquedaClaseArticulos dialog = new DlogBusquedaClaseArticulos(new javax.swing.JFrame(), true);
-            dialog.setVisible(true);
+        if (evt.getKeyCode() == KeyEvent.VK_F2) {
+            DlogBusquedaClaseArticulos buscarClase = new DlogBusquedaClaseArticulos(new javax.swing.JFrame(), true);
+            buscarClase.LbNombreFormulario.setText("articulo");
+            buscarClase.setVisible(true);
         }
-        
+
     }//GEN-LAST:event_TxtIdClaseKeyPressed
 
     private void BtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnGuardarActionPerformed
@@ -338,13 +398,28 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
     }//GEN-LAST:event_BtnGuardarActionPerformed
 
     private void LbIdArticuloPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_LbIdArticuloPropertyChange
-        
+        if (!LbIdArticulo.getText().equals("0")) {
+            buscarArticulo(LbIdArticulo.getText());
+        }
     }//GEN-LAST:event_LbIdArticuloPropertyChange
 
     private void BtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnBuscarActionPerformed
-        DlogBusquedaArticulos dialog = new DlogBusquedaArticulos(new javax.swing.JFrame(), true);
-        dialog.setVisible(true);
+        DlogBusquedaArticulos buscarArticulo = new DlogBusquedaArticulos(new javax.swing.JFrame(), true);
+        buscarArticulo.LbNombreFormulario.setText("articulo");
+        buscarArticulo.setVisible(true);
     }//GEN-LAST:event_BtnBuscarActionPerformed
+
+    private void BtnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnModificarActionPerformed
+        opModificar();
+    }//GEN-LAST:event_BtnModificarActionPerformed
+
+    private void BtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnActualizarActionPerformed
+        actualizar(LbIdArticulo.getText());
+    }//GEN-LAST:event_BtnActualizarActionPerformed
+
+    private void BtnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCancelarActionPerformed
+        opCancelar();
+    }//GEN-LAST:event_BtnCancelarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnActualizar;
