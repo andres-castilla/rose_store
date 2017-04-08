@@ -10,6 +10,7 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
     C_VerificarCampos verificarCampos = new C_VerificarCampos();
     C_Consultas consulta = new C_Consultas();
     C_Agregar agregar = new C_Agregar();
+    C_Actualizar actualizar = new C_Actualizar();
     Integer estado;
     String query;
 
@@ -50,6 +51,7 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         BtnCancelar.setEnabled(false);
         BtnBuscar.setEnabled(true);
         BtnModificar.setEnabled(false);
+        BtnModificar.setVisible(true);
         BtnActualizar.setVisible(false);
         LbIdClase.setText("0");
     }
@@ -126,13 +128,11 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
                 + " descripcion = '"+TxtNombreClase.getText()+"',"
                 + " estado = '"+estado+"'"
                 + " where id = '"+idclase+"';";
-        JOptionPane.showMessageDialog(null, query);
-    
-//        String respuesta = agregar.agregar(listado.T_ClaseProductos, campos, valores);
-//            if (respuesta.equals("ok")) {
-//                JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
-//                opCancelar();
-//            }
+        String respuesta = actualizar.update(query);
+            if (respuesta.equals("ok")) {
+                JOptionPane.showMessageDialog(null, "Registro Actualizado con Exito");
+                opCancelar();
+            }
     }
 
     @SuppressWarnings("unchecked")
@@ -151,8 +151,8 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         BtnBuscar = new javax.swing.JButton();
         BtnModificar = new javax.swing.JButton();
         BtnActualizar = new javax.swing.JButton();
-        LbIdClase = new javax.swing.JLabel();
         LbFondo = new javax.swing.JLabel();
+        LbIdClase = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -243,6 +243,8 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         });
         getContentPane().add(BtnActualizar);
         BtnActualizar.setBounds(390, 170, 90, 25);
+        getContentPane().add(LbFondo);
+        LbFondo.setBounds(0, 0, 0, 0);
 
         LbIdClase.setText("0");
         LbIdClase.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -252,8 +254,6 @@ public class DlogInterfaceClaseArticulos extends javax.swing.JDialog {
         });
         getContentPane().add(LbIdClase);
         LbIdClase.setBounds(460, 0, 20, 10);
-        getContentPane().add(LbFondo);
-        LbFondo.setBounds(0, 0, 0, 0);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

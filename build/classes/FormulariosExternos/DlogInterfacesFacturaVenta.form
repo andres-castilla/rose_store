@@ -608,7 +608,10 @@
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JLabel" name="LbCodigoId">
+    <Component class="javax.swing.JLabel" name="LbIdArticulo">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
       </AuxValues>
@@ -619,6 +622,9 @@
       </Constraints>
     </Component>
     <Component class="javax.swing.JLabel" name="LbClienteId">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
       </AuxValues>

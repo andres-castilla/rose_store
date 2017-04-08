@@ -86,7 +86,7 @@ CREATE TABLE t_productos (
 DROP TABLE IF EXISTS t_lista_precios;
 CREATE TABLE t_lista_precio (
   id_producto int not null,
-  margen_venta double(4,2) not null,
+  margen_venta int(4) not null,
   precio_venta int not null,
   KEY `fk_id_producto_lista_precio` (`id_producto`),
   CONSTRAINT `fk_id_producto_lista_precio` FOREIGN KEY (`id_producto`) REFERENCES `t_productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -149,4 +149,24 @@ CREATE TABLE t_detalle_factura_compras(
   KEY `fk_id_producto_factura_compra` (`id_producto`),
   CONSTRAINT `fk_id_factura_compra` FOREIGN KEY (`id_factura_compra`) REFERENCES `t_factura_compras` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_id_producto_factura_compra` FOREIGN KEY (`id_producto`) REFERENCES `t_productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS t_kardex;
+CREATE TABLE t_kardex(
+  id_producto int not null,
+  id_almacen_origen int not null,
+  id_almacen_destino int not null,
+  tipo_documento varchar(20) not null,
+  numero_documento int not null,
+  cantidad_entrada int not null,
+  cantidad_salida int not null,
+  valor_unitario int not null,
+  fecha date not null,
+  estado int not null,
+  KEY `fk_id_producto_kardex` (`id_producto`),
+  KEY `fk_id_almacen_origen_kardex` (`id_almacen_origen`),
+  KEY `fk_id_almacen_destino_kardex` (`id_almacen_destino`),
+  CONSTRAINT `fk_id_producto_kardex` FOREIGN KEY (`id_producto`) REFERENCES `t_productos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_id_almacen_origen_kardex` FOREIGN KEY (`id_almacen_origen`) REFERENCES `t_almacenes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_id_almacen_destino_kardex` FOREIGN KEY (`id_almacen_destino`) REFERENCES `t_almacenes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB;

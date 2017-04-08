@@ -11,6 +11,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
     C_VerificarCampos verificacionCampos = new C_VerificarCampos();
     C_Consultas consulta = new C_Consultas();
     C_Agregar agregar = new C_Agregar();
+    C_Actualizar actualizar = new C_Actualizar();
     Integer estado;
     String query;
 
@@ -59,8 +60,11 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnCancelar.setEnabled(false);
         BtnBuscar.setEnabled(true);
         BtnModificar.setEnabled(false);
+        BtnModificar.setVisible(true);
         BtnActualizar.setVisible(false);
         LbIdClase.setText("0");
+        LbId.setText("0");
+        LbIdArticulo.setText("0");
     }
 
     void opNuevo() {
@@ -76,8 +80,8 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnModificar.setEnabled(false);
         TxtIdClase.requestFocus();
     }
-    
-    void opModificar(){
+
+    void opModificar() {
         TxtIdClase.setEnabled(true);
         TxtDescripcion.setEnabled(true);
         CmbEstado.setEnabled(true);
@@ -88,7 +92,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnModificar.setVisible(false);
         BtnActualizar.setEnabled(true);
         BtnActualizar.setVisible(true);
-        
+
     }
 
     void estados() {
@@ -98,7 +102,14 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
             estado = 0;
         }
     }
-    
+
+    void consecutivoId() {
+        query = "Select count(id) as filas From " + listado.T_Productos + ";";
+        String[] datoBusqueda = consulta.consulta_existencia(query, 1, "filas");
+        int nuevoId = Integer.parseInt(datoBusqueda[0]) + 1;
+        LbId.setText(String.valueOf(nuevoId));
+    }
+
     void buscarClase(String idclase) {
         if (!idclase.equals("0")) {
             String campo = "descripcion";
@@ -119,9 +130,9 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
             TxtUltimoCosto.setText(datosArticulo[2]);
             TxtIdClase.setText(datosArticulo[3]);
             LbIdClase.setText(datosArticulo[3]);
-            if(datosArticulo[4].equals("0")){
+            if (datosArticulo[4].equals("0")) {
                 CmbEstado.setSelectedIndex(2);
-            }else{
+            } else {
                 CmbEstado.setSelectedIndex(1);
             }
             BtnModificar.setEnabled(true);
@@ -147,29 +158,33 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
                         + "'" + estado;
                 String respuesta = agregar.agregar(listado.T_Productos, campos, valores);
                 if (respuesta.equals("ok")) {
-                    JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
-                    opCancelar();
+                    respuesta = "";
+                    campos = "id_producto,margen_venta,precio_venta";
+                    valores = LbId.getText() + "','0','0";
+                    respuesta = agregar.agregar(listado.T_ListaPrecio, campos, valores);
+                    if (respuesta.equals("ok")) {
+                        JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
+                        opCancelar();
+                    }
                 }
             }
         }
     }
-    
-    void actualizar(String idarticulo){
+
+    void actualizar(String idarticulo) {
         estados();
         query = "Update"
-                + " "+listado.T_Productos
+                + " " + listado.T_Productos
                 + " Set"
-                + " descripcion = '"+TxtDescripcion.getText()+"',"
-                + " id_clase = '"+TxtIdClase.getText()+"',"
-                + " estado = '"+estado+"'"
-                + " where id = '"+idarticulo+"';";
-        JOptionPane.showMessageDialog(null, query);
-    
-//        String respuesta = agregar.agregar(listado.T_ClaseProductos, campos, valores);
-//            if (respuesta.equals("ok")) {
-//                JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
-//                opCancelar();
-//            }
+                + " descripcion = '" + TxtDescripcion.getText() + "',"
+                + " id_clase = '" + TxtIdClase.getText() + "',"
+                + " estado = '" + estado + "'"
+                + " where id = '" + idarticulo + "';";
+        String respuesta = actualizar.update(query);
+        if (respuesta.equals("ok")) {
+            JOptionPane.showMessageDialog(null, "Registro Actualizado con Exito");
+            opCancelar();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -195,6 +210,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnBuscar = new javax.swing.JButton();
         BtnModificar = new javax.swing.JButton();
         BtnActualizar = new javax.swing.JButton();
+        LbId = new javax.swing.JLabel();
         LbFondo = new javax.swing.JLabel();
         LbIdClase = new javax.swing.JLabel();
         LbIdArticulo = new javax.swing.JLabel();
@@ -330,6 +346,10 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         });
         getContentPane().add(BtnActualizar);
         BtnActualizar.setBounds(400, 260, 90, 25);
+
+        LbId.setText("0");
+        getContentPane().add(LbId);
+        LbId.setBounds(470, 0, 6, 14);
         getContentPane().add(LbFondo);
         LbFondo.setBounds(0, 0, 0, 0);
 
@@ -356,6 +376,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
 
     private void BtnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnNuevoActionPerformed
         opNuevo();
+        consecutivoId();
     }//GEN-LAST:event_BtnNuevoActionPerformed
 
     private void LbIdClasePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_LbIdClasePropertyChange
@@ -430,6 +451,7 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
     private javax.swing.JButton BtnNuevo;
     private javax.swing.JComboBox<String> CmbEstado;
     private javax.swing.JLabel LbFondo;
+    private javax.swing.JLabel LbId;
     public static javax.swing.JLabel LbIdArticulo;
     public static javax.swing.JLabel LbIdClase;
     private javax.swing.JLabel LbTitulo;

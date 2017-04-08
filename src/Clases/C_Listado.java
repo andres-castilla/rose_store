@@ -25,7 +25,7 @@ public class C_Listado {
     public String T_Almacenes = bd+"."+"t_almacenes";
     public String T_ClaseProductos = bd+"."+"t_clase_productos";
     public String T_Productos = bd+"."+"t_productos";
-    public String T_ListaPrecio = bd+"."+"t_lista_precios";
+    public String T_ListaPrecio = bd+"."+"t_lista_precio";
     public String T_FacturaVenta = bd+"."+"t_factura_ventas";
     public String T_DetalleFacturaVenta = bd+"."+"t_detalle_factura_ventas";
     public String T_FacturaCompra = bd+"."+"t_factura_compras";

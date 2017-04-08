@@ -92,8 +92,8 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
 
     void parametrosCamposClientesIni() {
         TxtIdentificacion.setText("");
-        LbCodigoId.setVisible(false);
-        LbCodigoId.setText("0");
+        LbIdArticulo.setVisible(false);
+        LbIdArticulo.setText("0");
         LbClienteId.setVisible(false);
         LbClienteId.setText("0");
         TxtNumeroFactura.setEnabled(false);
@@ -114,7 +114,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     }
 
     void parametrosCamposItemNuevo() {
-        LbCodigoId.setText("0");
+        LbIdArticulo.setText("0");
         TxtCodigo.setText("");
         TxtDescripcion.setText("");
         TxtCantidad.setText("");
@@ -175,7 +175,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         int subtotal = (cantidad * precio_unitario) - descuento;
 
         String[] nuevaItem = {
-            LbCodigoId.getText(),
+            LbIdArticulo.getText(),
             TxtCodigo.getText(),
             TxtDescripcion.getText(),
             TxtCantidad.getText(),
@@ -196,7 +196,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
             model.removeRow(numeroFila);
             calcularTotal(TablaDetalleFacturaVenta.getRowCount());
         } else if (metodo == "modificar") {
-            LbCodigoId.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 0).toString());
+            LbIdArticulo.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 0).toString());
             TxtCodigo.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 1).toString());
             TxtDescripcion.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 2).toString());
             TxtCantidad.setText(TablaDetalleFacturaVenta.getValueAt(numeroFila, 3).toString());
@@ -271,7 +271,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         BtnCancelar = new javax.swing.JButton();
         BtnLimpiar = new javax.swing.JButton();
         BtnAgregar = new javax.swing.JButton();
-        LbCodigoId = new javax.swing.JLabel();
+        LbIdArticulo = new javax.swing.JLabel();
         LbClienteId = new javax.swing.JLabel();
         LbNuevo = new javax.swing.JLabel();
         LbNuevoArticulo = new javax.swing.JLabel();
@@ -530,8 +530,12 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         BtnAgregar.setText("Agregar");
         getContentPane().add(BtnAgregar);
         BtnAgregar.setBounds(470, 430, 80, 23);
-        getContentPane().add(LbCodigoId);
-        LbCodigoId.setBounds(10, 160, 20, 20);
+
+        LbIdArticulo.setText("0");
+        getContentPane().add(LbIdArticulo);
+        LbIdArticulo.setBounds(10, 160, 20, 20);
+
+        LbClienteId.setText("0");
         getContentPane().add(LbClienteId);
         LbClienteId.setBounds(0, 80, 30, 20);
 
@@ -600,6 +604,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private void TxtCodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCodigoKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_F2) {
             DlogBusquedaArticulos dlogBusqueda = new DlogBusquedaArticulos(new javax.swing.JFrame(), true);
+            dlogBusqueda.LbNombreFormulario.setText("fv");
             dlogBusqueda.setVisible(true);
         }
     }//GEN-LAST:event_TxtCodigoKeyPressed
@@ -617,8 +622,8 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private com.toedter.calendar.JDateChooser DateFechaActual;
     private javax.swing.JLabel LbAceptar;
     public static javax.swing.JLabel LbClienteId;
-    public static javax.swing.JLabel LbCodigoId;
     private javax.swing.JLabel LbFondo;
+    public static javax.swing.JLabel LbIdArticulo;
     private javax.swing.JLabel LbNuevo;
     private javax.swing.JLabel LbNuevoArticulo;
     private javax.swing.JLabel LbNumeroFactura;

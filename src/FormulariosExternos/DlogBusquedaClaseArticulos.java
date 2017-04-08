@@ -1,6 +1,7 @@
 package FormulariosExternos;
 
 import Clases.*;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -67,7 +68,6 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
 
     void seleccionOpcion() {
         CmbCampoBuscar.removeAllItems();
-        String respuesta = "";
         if (RBotonOpTodos.isSelected()) {
             CmbCampoBuscar.setVisible(false);
             TxtDatoBusqueda.setVisible(false);
@@ -78,11 +78,14 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
             }
             CmbCampoBuscar.setVisible(true);
             TxtDatoBusqueda.setVisible(true);
+            TxtDatoBusqueda.setText("");
+            TxtDatoBusqueda.requestFocus();
         }
     }
 
     void limpiarTabla() {
-        for (i = 0; i < TablaResultadoBusqueda.getRowCount(); i++) {
+        int cantFilasBorrar = TablaResultadoBusqueda.getRowCount();
+        for (i = 0; i < cantFilasBorrar; i++) {
             model.removeRow(0);
         }
     }
@@ -93,6 +96,27 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
         int cantfilas = Integer.parseInt(filas[0]);
         if (cantfilas > 0) {
             query = "Select * from " + listado.T_ClaseProductos;
+            String[] campos = {"id", "descripcion"};
+            datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
+            String[] fila = new String[campos.length];
+            limpiarTabla();
+            for (i = 0; i < cantfilas; i++) {
+                for (int j = 0; j < campos.length; j++) {
+                    fila[j] = datosConsulta[i][j];
+                }
+                model.addRow(fila);
+            }
+        }
+    }
+    
+    void busquedaArticuloEspecifica(String campo, String textobuscar) {
+        if (campo.equals("Seleccionar")) {
+            JOptionPane.showMessageDialog(null, "Debe Seleccionar un Parametro de Busqueda");
+        } else {
+            query = "select count(id) as filas from " + listado.T_ClaseProductos + " where " + campo + " like '" + textobuscar + "%';";
+            String[] filas = consulta.consulta_existencia(query, 1, "filas");
+            int cantfilas = Integer.parseInt(filas[0]);
+            query = "select * from " + listado.T_ClaseProductos + " where " + campo + " like '" + textobuscar + "%';";
             String[] campos = {"id", "descripcion"};
             datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
             String[] fila = new String[campos.length];
@@ -162,11 +186,21 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
 
         CmbCampoBuscar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         CmbCampoBuscar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        CmbCampoBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CmbCampoBuscarActionPerformed(evt);
+            }
+        });
         getContentPane().add(CmbCampoBuscar);
         CmbCampoBuscar.setBounds(40, 80, 110, 23);
 
         TxtDatoBusqueda.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         TxtDatoBusqueda.setText("jTextField1");
+        TxtDatoBusqueda.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TxtDatoBusquedaKeyPressed(evt);
+            }
+        });
         getContentPane().add(TxtDatoBusqueda);
         TxtDatoBusqueda.setBounds(160, 80, 280, 23);
 
@@ -184,11 +218,6 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
         buttonGroup1.add(RBotonOpEspecifica);
         RBotonOpEspecifica.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         RBotonOpEspecifica.setText("Busqueda Especifica");
-        RBotonOpEspecifica.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                RBotonOpEspecificaPropertyChange(evt);
-            }
-        });
         getContentPane().add(RBotonOpEspecifica);
         RBotonOpEspecifica.setBounds(20, 50, 137, 25);
 
@@ -211,13 +240,19 @@ public class DlogBusquedaClaseArticulos extends javax.swing.JDialog {
         seleccionOpcion();
     }//GEN-LAST:event_RBotonOpTodosPropertyChange
 
-    private void RBotonOpEspecificaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_RBotonOpEspecificaPropertyChange
-
-    }//GEN-LAST:event_RBotonOpEspecificaPropertyChange
-
     private void BtnSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSeleccionarActionPerformed
         seleccion();
     }//GEN-LAST:event_BtnSeleccionarActionPerformed
+
+    private void TxtDatoBusquedaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtDatoBusquedaKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            busquedaArticuloEspecifica(CmbCampoBuscar.getSelectedItem().toString(), TxtDatoBusqueda.getText());
+        }
+    }//GEN-LAST:event_TxtDatoBusquedaKeyPressed
+
+    private void CmbCampoBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CmbCampoBuscarActionPerformed
+        TxtDatoBusqueda.requestFocus();
+    }//GEN-LAST:event_CmbCampoBuscarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
