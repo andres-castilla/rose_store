@@ -116,7 +116,7 @@ CREATE TABLE t_detalle_factura_ventas(
   descripcion_producto varchar(200) not null,
   cantidad int not null,
   precio_unitario int not null,
-  descuento double(4,2) not null,
+  descuento int not null,
   KEY `fk_id_factura_venta` (`id_factura_venta`),
   KEY `fk_id_producto_factura_venta` (`id_producto`),
   CONSTRAINT `fk_id_factura_venta` FOREIGN KEY (`id_factura_venta`) REFERENCES `t_factura_ventas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

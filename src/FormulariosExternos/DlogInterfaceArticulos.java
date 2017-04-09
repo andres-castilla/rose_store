@@ -210,8 +210,8 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         BtnBuscar = new javax.swing.JButton();
         BtnModificar = new javax.swing.JButton();
         BtnActualizar = new javax.swing.JButton();
-        LbId = new javax.swing.JLabel();
         LbFondo = new javax.swing.JLabel();
+        LbId = new javax.swing.JLabel();
         LbIdClase = new javax.swing.JLabel();
         LbIdArticulo = new javax.swing.JLabel();
 
@@ -346,12 +346,12 @@ public class DlogInterfaceArticulos extends javax.swing.JDialog {
         });
         getContentPane().add(BtnActualizar);
         BtnActualizar.setBounds(400, 260, 90, 25);
+        getContentPane().add(LbFondo);
+        LbFondo.setBounds(0, 0, 0, 0);
 
         LbId.setText("0");
         getContentPane().add(LbId);
         LbId.setBounds(470, 0, 6, 14);
-        getContentPane().add(LbFondo);
-        LbFondo.setBounds(0, 0, 0, 0);
 
         LbIdClase.setText("0");
         LbIdClase.addPropertyChangeListener(new java.beans.PropertyChangeListener() {

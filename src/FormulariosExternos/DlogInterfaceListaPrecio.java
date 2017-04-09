@@ -19,16 +19,17 @@ public class DlogInterfaceListaPrecio extends javax.swing.JDialog {
     public DlogInterfaceListaPrecio(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        parametrizacion();
+        parametrosIniciales();
     }
 
-    void parametrizacion() {
+    void parametrosIniciales() {
         sizeItem();
         opCancelar();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         LbFondo.setIcon(img.FondoHome(LbFondo.getWidth(), LbFondo.getHeight()));
         LbBuscar.setIcon(img.IconoBuscar(LbBuscar.getWidth(), LbBuscar.getHeight()));
+        LbImpresion.setIcon(img.IconoImpresion(LbImpresion.getWidth(), LbImpresion.getHeight()));
         TxtIdClase.setBackground(listado.colorBusqueda);
     }
 
@@ -37,6 +38,7 @@ public class DlogInterfaceListaPrecio extends javax.swing.JDialog {
         this.setSize(500, 480);
         LbFondo.setSize(this.getWidth(), this.getHeight());
         LbBuscar.setSize(40, 40);
+        LbImpresion.setSize(40, 40);
         ScrollTabla.setSize(this.getWidth() - 30, 250);
         BtnCancelar.setLocation(100, ScrollTabla.getY() + ScrollTabla.getHeight() + 10);
         BtnActualizar.setLocation(BtnCancelar.getX() + BtnCancelar.getWidth() + 80, BtnCancelar.getY());
@@ -202,6 +204,7 @@ public class DlogInterfaceListaPrecio extends javax.swing.JDialog {
         RBtnTodos = new javax.swing.JRadioButton();
         RBtnSeleccionarClase = new javax.swing.JRadioButton();
         LbIdClase = new javax.swing.JLabel();
+        LbImpresion = new javax.swing.JLabel();
         LbFondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -310,6 +313,10 @@ public class DlogInterfaceListaPrecio extends javax.swing.JDialog {
         });
         getContentPane().add(LbIdClase);
         LbIdClase.setBounds(400, 0, 20, 14);
+
+        LbImpresion.setText("LbImpresion");
+        getContentPane().add(LbImpresion);
+        LbImpresion.setBounds(460, 50, 58, 14);
         getContentPane().add(LbFondo);
         LbFondo.setBounds(0, 0, 0, 0);
 
@@ -381,6 +388,7 @@ public class DlogInterfaceListaPrecio extends javax.swing.JDialog {
     private javax.swing.JLabel LbBuscar;
     private javax.swing.JLabel LbFondo;
     public static javax.swing.JLabel LbIdClase;
+    private javax.swing.JLabel LbImpresion;
     private javax.swing.JLabel LbTitulo;
     private javax.swing.JRadioButton RBtnSeleccionarClase;
     private javax.swing.JRadioButton RBtnTodos;

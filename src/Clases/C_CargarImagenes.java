@@ -36,6 +36,13 @@ public class C_CargarImagenes {
         return icono;
     }
     
+        public Icon IconoImpresion(int W, int H){
+        ImageIcon icoUsuario = new ImageIcon(Ic.I_Impresion);
+        icono = new ImageIcon(icoUsuario.getImage().getScaledInstance(W, H, Image.SCALE_DEFAULT));
+        return icono;
+    }
+
+    
     public Icon FondoLogin(int W, int H){
         ImageIcon icoUsuario = new ImageIcon(Ic.F_Login);
         icono = new ImageIcon(icoUsuario.getImage().getScaledInstance(W, H, Image.SCALE_DEFAULT));

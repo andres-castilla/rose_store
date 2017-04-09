@@ -14,6 +14,7 @@ public class C_Listado {
     public String I_Nuevo = externo+"src/Imagenes/Ico_Nuevo.png";
     public String I_Aceptar = externo+"src/Imagenes/Ico_Aceptar.png";
     public String I_Buscar = externo+"src/Imagenes/Ico_Buscar.png";
+    public String I_Impresion = externo+"src/Imagenes/Ico_Impresion.png";
     public Color colorBusqueda = new Color(192,192,192);
     
     //LISTADO DE TABLAS
@@ -30,4 +31,5 @@ public class C_Listado {
     public String T_DetalleFacturaVenta = bd+"."+"t_detalle_factura_ventas";
     public String T_FacturaCompra = bd+"."+"t_factura_compras";
     public String T_DetalleFacturaCompra = bd+"."+"t_detalle_factura_compras";
+    public String T_Kardex = bd+"."+"t_kardex";
 }

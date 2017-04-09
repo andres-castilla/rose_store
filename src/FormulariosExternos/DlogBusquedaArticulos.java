@@ -11,7 +11,7 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
     C_Consultas consulta = new C_Consultas();
     DefaultTableModel model;
     Integer i;
-    String query;
+    String[] query = new String[2];
     String[] titulos;
     String[][] datosConsulta = null;
 
@@ -91,12 +91,17 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
     }
 
     void consultaDatos() {
-        query = "select count(id) as filas from " + listado.T_Productos + ";";
-        String[] filas = consulta.consulta_existencia(query, 1, "filas");
+        if(LbNombreFormulario.getText().equals("articulo")){
+            query[0] = "select count(id) as filas from " + listado.T_Productos + ";";
+            query[1] = "Select * from " + listado.T_Productos;
+        }else{
+            query[0] = "select count(id) as filas from " + listado.T_Productos + " where estado = '1';";
+            query[1] = "Select * from " + listado.T_Productos + " where estado = '1';";
+        }
+        String[] filas = consulta.consulta_existencia(query[0], 1, "filas");
         int cantfilas = Integer.parseInt(filas[0]);
-        query = "Select * from " + listado.T_Productos;
         String[] campos = {"id", "codigo", "descripcion"};
-        datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
+        datosConsulta = consulta.consulta_existencia(query[1], cantfilas, campos.length, campos);
         String[] fila = new String[campos.length];
         limpiarTabla();
         for (i = 0; i < cantfilas; i++) {
@@ -111,12 +116,17 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
         if (campo.equals("Seleccionar")) {
             JOptionPane.showMessageDialog(null, "Debe Seleccionar un Parametro de Busqueda");
         } else {
-            query = "select count(id) as filas from " + listado.T_Productos + " where " + campo + " like '" + textobuscar + "%';";
-            String[] filas = consulta.consulta_existencia(query, 1, "filas");
+            if(LbNombreFormulario.getText().equals("articulo")){
+                query[0] = "select count(id) as filas from " + listado.T_Productos + " where " + campo + " like '" + textobuscar + "%';";
+                query[1] = "select * from " + listado.T_Productos + " where " + campo + " like '" + textobuscar + "%';";
+            }else{
+                query[0] = "select count(id) as filas from " + listado.T_Productos + " where " + campo + " like '" + textobuscar + "%' and estado = '1';";
+                query[1] = "select * from " + listado.T_Productos + " where " + campo + " like '" + textobuscar + "%' and estado = '1';";
+            }
+            String[] filas = consulta.consulta_existencia(query[0], 1, "filas");
             int cantfilas = Integer.parseInt(filas[0]);
-            query = "select * from " + listado.T_Productos + " where " + campo + " like '" + textobuscar + "%';";
             String[] campos = {"id", "codigo", "descripcion"};
-            datosConsulta = consulta.consulta_existencia(query, cantfilas, campos.length, campos);
+            datosConsulta = consulta.consulta_existencia(query[1], cantfilas, campos.length, campos);
             String[] fila = new String[campos.length];
             limpiarTabla();
             for (i = 0; i < cantfilas; i++) {
@@ -139,6 +149,9 @@ public class DlogBusquedaArticulos extends javax.swing.JDialog {
                 dispose();
             }else if(LbNombreFormulario.getText().equals("fv")){
                 DlogInterfacesFacturaVenta.LbIdArticulo.setText(id);
+                dispose();
+            }else if(LbNombreFormulario.getText().equals("fc")){
+                DlogInterfacesFacturaCompra.LbIdArticulo.setText(id);
                 dispose();
             }
         }

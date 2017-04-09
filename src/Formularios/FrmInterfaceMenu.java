@@ -28,6 +28,7 @@ public class FrmInterfaceMenu extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -68,6 +69,15 @@ public class FrmInterfaceMenu extends javax.swing.JFrame {
         getContentPane().add(jButton4);
         jButton4.setBounds(30, 170, 90, 23);
 
+        jButton5.setText("Factura compra");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton5);
+        jButton5.setBounds(10, 210, 120, 23);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -90,6 +100,11 @@ public class FrmInterfaceMenu extends javax.swing.JFrame {
         DlogInterfaceListaPrecio lista = new DlogInterfaceListaPrecio(new javax.swing.JFrame(), true);
         lista.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        DlogInterfacesFacturaCompra lista = new DlogInterfacesFacturaCompra(new javax.swing.JFrame(), true);
+        lista.setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -131,5 +146,6 @@ public class FrmInterfaceMenu extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     // End of variables declaration//GEN-END:variables
 }

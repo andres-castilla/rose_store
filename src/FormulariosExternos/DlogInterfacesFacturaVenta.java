@@ -1,10 +1,12 @@
 package FormulariosExternos;
 
 import Clases.*;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.Date;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.table.*;
 
 public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
@@ -12,10 +14,13 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     C_CargarImagenes img = new C_CargarImagenes();
     C_Consultas consulta = new C_Consultas();
     C_Listado listado = new C_Listado();
+    C_VerificarCampos verificar_campos = new C_VerificarCampos();
+    C_FechaAjustarFormato fecha = new C_FechaAjustarFormato();
+    C_Agregar agregar = new C_Agregar();
     Date fechaActual;
     DefaultTableModel model;//SE DEBE CREAR EL OBJETO DEBAJO DEL PUBLIC CLASS DEL FORMULARIO
     Integer i;
-    String query;
+    String query, campos, valores;
     String[] datosConsulta = null;
 
     public DlogInterfacesFacturaVenta(java.awt.Frame parent, boolean modal) {
@@ -38,6 +43,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         TxtIdentificacion.setBackground(listado.colorBusqueda);
         TxtAlmacen.setBackground(listado.colorBusqueda);
         TxtCodigo.setBackground(listado.colorBusqueda);
+        opCancelar();
     }
 
     void sizeItem() {
@@ -90,12 +96,35 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         DateFechaActual.setDate(fechaActual);
     }
 
+    void opCancelar() {
+        TxtIdentificacion.setText("");
+        TxtNombre.setText("");
+        TxtTelefono.setText("");
+        TxtCorreo.setText("");
+        TxtAlmacen.setText("");
+        LbIdCliente.setText("0");
+        LbIdAlmacen.setText("0");
+        LbIdArticulo.setText("0");
+        if (TablaDetalleFacturaVenta.getRowCount() > 0) {
+            int cantfilas = TablaDetalleFacturaVenta.getRowCount();
+            for (int i = 0; i < cantfilas; i++) {
+                model.removeRow(0);
+            }
+        }
+        TxtSubTotal.setEnabled(false);
+        TxtSubTotal.setText("0");
+        TxtDescuentoTotal.setEnabled(false);
+        TxtDescuentoTotal.setText("0");
+        TxtTotal.setEnabled(false);
+        TxtTotal.setText("0");
+        TAreaObservacion.setText("");
+        DateFechaActual.setDate(fechaActual);
+    }
+
     void parametrosCamposClientesIni() {
         TxtIdentificacion.setText("");
-        LbIdArticulo.setVisible(false);
         LbIdArticulo.setText("0");
-        LbClienteId.setVisible(false);
-        LbClienteId.setText("0");
+        LbIdCliente.setText("0");
         TxtNumeroFactura.setEnabled(false);
         TxtNombre.setEnabled(false);
         TxtNombre.setText("");
@@ -103,10 +132,11 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         TxtCorreo.setText("");
         TxtTelefono.setEnabled(false);
         TxtTelefono.setText("");
+        TxtAlmacen.setEditable(false);
     }
 
     void parametrosCamposClienteNuevo() {
-        LbClienteId.setText("0");
+        LbIdCliente.setText("0");
         TxtNombre.setEnabled(true);
         TxtCorreo.setEnabled(true);
         TxtTelefono.setEnabled(true);
@@ -116,6 +146,7 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     void parametrosCamposItemNuevo() {
         LbIdArticulo.setText("0");
         TxtCodigo.setText("");
+        TxtCodigo.setEditable(false);
         TxtDescripcion.setText("");
         TxtCantidad.setText("");
         TxtPrecioVentaUnit.setText("");
@@ -133,34 +164,28 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     }
 
     void consultaCliente(String identificacion) {
-        query = "Select"
-                + " *"
-                + " From"
-                + " " + listado.T_Clientes
+        query = "Select *"
+                + " From " + listado.T_Clientes
                 + " where identificacion = " + identificacion
-                + " And"
-                + " estado = 1;";
+                + " And estado = 1;";
         String resultado = consulta.consulta_existencia(query);
         if (resultado.equals("")) {
             JOptionPane.showMessageDialog(null, "Cliente no encontrado.", "Mensaje Información", JOptionPane.INFORMATION_MESSAGE);
             parametrosCamposClienteNuevo();
         } else {
-            String[] campos = {"id,nombre,correo,telefono"};
+            String[] campos = {"id","nombre","correo","telefono"};
             datosConsulta = consulta.consulta_existencia(query, campos.length, campos);
-            LbClienteId.setText(datosConsulta[0]);
+            LbIdCliente.setText(datosConsulta[0]);
             TxtNombre.setText(datosConsulta[1]);
             TxtCorreo.setText(datosConsulta[2]);
             TxtTelefono.setText(datosConsulta[3]);
             TxtAlmacen.requestFocus();
         }
-
     }
 
     void consultaNuneroFactura() {
-        query = "Select"
-                + " count(id) as numeroFacturas"
-                + " From"
-                + " " + listado.T_FacturaVenta
+        query = "Select count(id) as numeroFacturas"
+                + " From " + listado.T_FacturaVenta
                 + " ;";
         String campos = "numeroFacturas";
         datosConsulta = consulta.consulta_existencia(query, 1, campos);
@@ -168,28 +193,57 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         TxtNumeroFactura.setText(numeroFactura);
     }
 
-    void agregarItem_Tabla() {
-        int cantidad = Integer.parseInt(TxtCantidad.getText());
-        int descuento = Integer.parseInt(TxtDescuentoUnit.getText());
-        int precio_unitario = Integer.parseInt(TxtPrecioVentaUnit.getText());
-        int subtotal = (cantidad * precio_unitario) - descuento;
+    void consultaAlmacen(String idalmacen) {
+        if (!idalmacen.equals("0")) {
+            query = "Select * From " + listado.T_Almacenes + " Where id = '" + LbIdAlmacen.getText() + "';";
+            datosConsulta = consulta.consulta_existencia(query, 1, "descripcion");
+            TxtAlmacen.setText(datosConsulta[0]);
+            TxtCodigo.requestFocus();
+        }
+    }
 
-        String[] nuevaItem = {
-            LbIdArticulo.getText(),
-            TxtCodigo.getText(),
-            TxtDescripcion.getText(),
-            TxtCantidad.getText(),
-            TxtPrecioVentaUnit.getText(),
-            TxtDescuentoUnit.getText(),
-            String.valueOf(subtotal)
-        };
-        model.addRow(nuevaItem);
-        parametrosCamposItemNuevo();
-        calcularTotal(TablaDetalleFacturaVenta.getRowCount());
+    void consultaArticulo(String idarticulo) {
+        if (!idarticulo.equals("0")) {
+            query = "Select p.id, p.codigo, p.descripcion, lp.precio_venta"
+                    + " From " + listado.T_Productos + " p, " + listado.T_ListaPrecio + " lp"
+                    + " Where lp.id_producto = p.id and lp.id_producto = '" + idarticulo + "' and p.estado = '1';";
+            String[] campos = {"codigo", "descripcion", "precio_venta"};
+            datosConsulta = consulta.consulta_existencia(query, campos.length, campos);
+            TxtCodigo.setText(datosConsulta[0]);
+            TxtDescripcion.setText(datosConsulta[1]);
+            TxtPrecioVentaUnit.setText(datosConsulta[2]);
+        }
+    }
+
+    void agregarItem_Tabla() {
+        if (verificar_campos.CamposAgregarItemFV(
+                TxtDescripcion.getText(),
+                TxtCantidad.getText(),
+                TxtDescuentoUnit.getText(),
+                TxtPrecioVentaUnit.getText()).equals("ok")) {
+            int cantidad = Integer.parseInt(TxtCantidad.getText());
+            int descuento = Integer.parseInt(TxtDescuentoUnit.getText());
+            int precio_unitario = Integer.parseInt(TxtPrecioVentaUnit.getText());
+            int subtotal = (cantidad * precio_unitario) - descuento;
+
+            String[] nuevaItem = {
+                LbIdArticulo.getText(),
+                TxtCodigo.getText(),
+                TxtDescripcion.getText(),
+                TxtCantidad.getText(),
+                TxtPrecioVentaUnit.getText(),
+                TxtDescuentoUnit.getText(),
+                String.valueOf(subtotal)
+            };
+            model.addRow(nuevaItem);
+            parametrosCamposItemNuevo();
+            calcularTotal(TablaDetalleFacturaVenta.getRowCount());
+            TxtCodigo.requestFocus();
+        }
+
     }
 
     void opcionesPopUp(String metodo, Integer numeroFila) {
-        //String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "PrecioUnit", "Dcto", "SubTotal"};
         if (numeroFila < 0) {
             JOptionPane.showMessageDialog(null, "Debe Seleccionar Item", "Mensaje de Información", JOptionPane.INFORMATION_MESSAGE);
         } else if (metodo == "eliminar") {
@@ -211,17 +265,127 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         int subtotal = 0;
         int descuentoTotal = 0;
         int total = 0;
-            for (i = 0; i < cantidadFilas; i++) {
-                int cantidad = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 3).toString());
-                int precioUnit = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 4).toString());
-                subtotal += (cantidad * precioUnit);
-                int descuento = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 5).toString());
-                descuentoTotal += descuento;
+        for (i = 0; i < cantidadFilas; i++) {
+            int cantidad = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 3).toString());
+            int precioUnit = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 4).toString());
+            subtotal += (cantidad * precioUnit);
+            int descuento = Integer.parseInt(TablaDetalleFacturaVenta.getValueAt(i, 5).toString());
+            descuentoTotal += descuento;
+        }
+        total = subtotal - descuentoTotal;
+        TxtSubTotal.setText(String.valueOf(subtotal));
+        TxtDescuentoTotal.setText(String.valueOf(descuentoTotal));
+        TxtTotal.setText(String.valueOf(total));
+    }
+
+    void agregar() {
+        String respuesta = "";
+        int subtotal = Integer.parseInt(TxtSubTotal.getText());
+        int total = Integer.parseInt(TxtTotal.getText());
+        if (verificar_campos.CamposFacturaVenta(TxtIdentificacion.getText(), TxtNombre.getText(), TxtTelefono.getText(),
+                TxtCorreo.getText(), TxtAlmacen.getText(), TablaDetalleFacturaVenta.getRowCount(),
+                subtotal, total).equals("ok")) {
+            String fechadocumento = fecha.dateToString(DateFechaActual.getDate());
+            if (LbIdCliente.getText().equals("0")) {
+                campos
+                        = "identificacion,"
+                        + "nombre,"
+                        + "correo,"
+                        + "telefono,"
+                        + "estado";
+                valores
+                        = TxtIdentificacion.getText() + "',"
+                        + "'" + TxtNombre.getText() + "',"
+                        + "'" + TxtCorreo.getText() + "',"
+                        + "'" + TxtTelefono.getText() + "',"
+                        + "'1";
+                respuesta = agregar.agregar(listado.T_Clientes, campos, valores);
+                query = "Select * From " + listado.T_Clientes + " Where identificacion = '" + TxtIdentificacion.getText() + "';";
+                datosConsulta = consulta.consulta_existencia(query, 1, "id");
+                LbIdCliente.setText(datosConsulta[0]);
             }
-            total = subtotal - descuentoTotal;
-            TxtSubTotal.setText(String.valueOf(subtotal));
-            TxtDescuentoTotal.setText(String.valueOf(descuentoTotal));
-            TxtTotal.setText(String.valueOf(total));
+
+            JOptionPane.showMessageDialog(null, "id cliente:" + datosConsulta[0]);
+
+            respuesta = "";
+            campos
+                    = "id,"
+                    + "id_cliente,"
+                    + "fecha,"
+                    + "subtotal,"
+                    + "descuento,"
+                    + "total,"
+                    + "observacion,"
+                    + "estado";
+            valores
+                    = TxtNumeroFactura.getText() + "',"//id
+                    + "'" + LbIdCliente.getText() + "',"//id_cliente
+                    + "'" + fechadocumento + "',"//fecha
+                    + "'" + TxtSubTotal.getText() + "',"//subtotal
+                    + "'" + TxtDescuentoTotal.getText() + "',"//descuento
+                    + "'" + TxtTotal.getText() + "',"//total
+                    + "'" + TAreaObservacion.getText() + "',"//observacion
+                    + "'1";//estado
+            respuesta = agregar.agregar(listado.T_FacturaVenta, campos, valores);
+            
+            JOptionPane.showMessageDialog(null, "agrega factura venta:-" + respuesta);
+
+            //String[] titles = {"Id", "Codigo", "Descripcion", "Cantidad", "Precio Unit", "Dcto", "SubTotal"};
+            if (respuesta.equals("ok")) {
+                respuesta = "";
+                campos
+                        = "id_factura_venta,"
+                        + "id_producto,"
+                        + "descripcion_producto,"
+                        + "cantidad,"
+                        + "precio_unitario,"
+                        + "descuento";
+                for (i = 0; i < TablaDetalleFacturaVenta.getRowCount(); i++) {
+                    valores
+                            = TxtNumeroFactura.getText() + "',"//id_factura_venta
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 0) + "',"//id_producto
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 2) + "',"//descripcion_producto
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 3) + "',"//cantidad
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 4) + "',"//precio_unitario
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 5);//descuento
+                    respuesta = agregar.agregar(listado.T_DetalleFacturaVenta, campos, valores);
+                }
+                
+                JOptionPane.showMessageDialog(null, "agrega detalle fv:-"+respuesta);
+                
+                campos
+                        = "id_producto,"
+                        + "id_almacen_origen,"
+                        + "id_almacen_destino,"
+                        + "tipo_documento,"
+                        + "numero_documento,"
+                        + "cantidad_entrada,"
+                        + "cantidad_salida,"
+                        + "valor_unitario,"
+                        + "fecha,"
+                        + "estado";
+                for (i = 0; i < TablaDetalleFacturaVenta.getRowCount(); i++) {
+                    valores
+                            = TablaDetalleFacturaVenta.getValueAt(i, 0) + "',"//id_producto
+                            + "'" + LbIdAlmacen.getText() + "',"//id_almacen_origen
+                            + "'" + LbIdAlmacen.getText() + "',"//id_almacen_destino
+                            + "'fv',"//tipo_documento
+                            + "'" + TxtNumeroFactura.getText() + "',"//numero_documento
+                            + "'0',"//cantidad_entrada
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 3) + "',"//cantidad_salida
+                            + "'" + TablaDetalleFacturaVenta.getValueAt(i, 4) + "',"//precio_unitario
+                            + "'" + fechadocumento + "',"//fecha
+                            + "'1";//estado
+                    respuesta = agregar.agregar(listado.T_Kardex, campos, valores);
+                }
+                JOptionPane.showMessageDialog(null, "agrega kardex:-"+respuesta);
+                if (respuesta.equals("ok")) {
+                    JOptionPane.showMessageDialog(null, "Registro Agregado con Exito");
+                    opCancelar();
+                    consultaNuneroFactura();
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -272,9 +436,10 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         BtnLimpiar = new javax.swing.JButton();
         BtnAgregar = new javax.swing.JButton();
         LbIdArticulo = new javax.swing.JLabel();
-        LbClienteId = new javax.swing.JLabel();
+        LbIdCliente = new javax.swing.JLabel();
         LbNuevo = new javax.swing.JLabel();
         LbNuevoArticulo = new javax.swing.JLabel();
+        LbIdAlmacen = new javax.swing.JLabel();
         LbFondo = new javax.swing.JLabel();
 
         MenuEditar.setFont(new java.awt.Font("Constantia", 0, 14)); // NOI18N
@@ -377,6 +542,19 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
 
         TxtAlmacen.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         TxtAlmacen.setToolTipText("Presione F2");
+        TxtAlmacen.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                TxtAlmacenFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                TxtAlmacenFocusLost(evt);
+            }
+        });
+        TxtAlmacen.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TxtAlmacenKeyPressed(evt);
+            }
+        });
         getContentPane().add(TxtAlmacen);
         TxtAlmacen.setBounds(760, 110, 100, 20);
 
@@ -386,6 +564,14 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         jLabel15.setBounds(30, 160, 50, 18);
 
         TxtCodigo.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        TxtCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                TxtCodigoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                TxtCodigoFocusLost(evt);
+            }
+        });
         TxtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 TxtCodigoKeyPressed(evt);
@@ -519,25 +705,43 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         getContentPane().add(TxtTotal);
         TxtTotal.setBounds(720, 390, 140, 21);
 
+        BtnCancelar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnCancelar.setText("Cancelar");
         getContentPane().add(BtnCancelar);
-        BtnCancelar.setBounds(240, 430, 80, 23);
+        BtnCancelar.setBounds(230, 430, 90, 25);
 
+        BtnLimpiar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnLimpiar.setText("Limpiar");
+        BtnLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnLimpiarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnLimpiar);
-        BtnLimpiar.setBounds(350, 430, 80, 23);
+        BtnLimpiar.setBounds(340, 430, 90, 25);
 
+        BtnAgregar.setFont(new java.awt.Font("Constantia", 0, 13)); // NOI18N
         BtnAgregar.setText("Agregar");
+        BtnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnAgregarActionPerformed(evt);
+            }
+        });
         getContentPane().add(BtnAgregar);
-        BtnAgregar.setBounds(470, 430, 80, 23);
+        BtnAgregar.setBounds(460, 430, 90, 25);
 
         LbIdArticulo.setText("0");
+        LbIdArticulo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                LbIdArticuloPropertyChange(evt);
+            }
+        });
         getContentPane().add(LbIdArticulo);
-        LbIdArticulo.setBounds(10, 160, 20, 20);
+        LbIdArticulo.setBounds(770, 0, 10, 20);
 
-        LbClienteId.setText("0");
-        getContentPane().add(LbClienteId);
-        LbClienteId.setBounds(0, 80, 30, 20);
+        LbIdCliente.setText("0");
+        getContentPane().add(LbIdCliente);
+        LbIdCliente.setBounds(750, 0, 10, 20);
 
         LbNuevo.setToolTipText("");
         LbNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -553,6 +757,15 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
         LbNuevoArticulo.setText("Nuevo Articulo");
         getContentPane().add(LbNuevoArticulo);
         LbNuevoArticulo.setBounds(40, 440, 100, 18);
+
+        LbIdAlmacen.setText("0");
+        LbIdAlmacen.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                LbIdAlmacenPropertyChange(evt);
+            }
+        });
+        getContentPane().add(LbIdAlmacen);
+        LbIdAlmacen.setBounds(790, 0, 6, 20);
         getContentPane().add(LbFondo);
         LbFondo.setBounds(0, 0, 0, 0);
 
@@ -607,12 +820,68 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
             dlogBusqueda.LbNombreFormulario.setText("fv");
             dlogBusqueda.setVisible(true);
         }
+        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
+            LbIdArticulo.setText("0");
+            TxtCodigo.setText("");
+            TxtDescripcion.setText("");
+            TxtCantidad.setText("");
+            TxtDescuentoUnit.setText("");
+            TxtPrecioVentaUnit.setText("");
+        }
     }//GEN-LAST:event_TxtCodigoKeyPressed
 
     private void LbNuevoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LbNuevoMouseClicked
         DlogInterfaceArticulos dialog = new DlogInterfaceArticulos(new javax.swing.JFrame(), true);
         dialog.setVisible(true);
     }//GEN-LAST:event_LbNuevoMouseClicked
+
+    private void TxtAlmacenKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtAlmacenKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_F2) {
+            DlogBusquedaAlmacen busquedaAlmacen = new DlogBusquedaAlmacen(new javax.swing.JFrame(), true);
+            busquedaAlmacen.LbNombreFormulario.setText("fv");
+            busquedaAlmacen.setVisible(true);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE) {
+            TxtAlmacen.setText("");
+            LbIdAlmacen.setText("0");
+        }
+    }//GEN-LAST:event_TxtAlmacenKeyPressed
+
+    private void LbIdAlmacenPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_LbIdAlmacenPropertyChange
+        consultaAlmacen(LbIdAlmacen.getText());
+    }//GEN-LAST:event_LbIdAlmacenPropertyChange
+
+    private void LbIdArticuloPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_LbIdArticuloPropertyChange
+        consultaArticulo(LbIdArticulo.getText());
+    }//GEN-LAST:event_LbIdArticuloPropertyChange
+
+    private void TxtCodigoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TxtCodigoFocusGained
+        Border border = BorderFactory.createLineBorder(Color.red);
+        TxtCodigo.setBorder(border);
+    }//GEN-LAST:event_TxtCodigoFocusGained
+
+    private void TxtCodigoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TxtCodigoFocusLost
+        Border border = BorderFactory.createLineBorder(Color.GRAY);
+        TxtCodigo.setBorder(border);
+    }//GEN-LAST:event_TxtCodigoFocusLost
+
+    private void BtnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAgregarActionPerformed
+        agregar();
+    }//GEN-LAST:event_BtnAgregarActionPerformed
+
+    private void TxtAlmacenFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TxtAlmacenFocusGained
+        Border border = BorderFactory.createLineBorder(Color.red);
+        TxtAlmacen.setBorder(border);
+    }//GEN-LAST:event_TxtAlmacenFocusGained
+
+    private void TxtAlmacenFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TxtAlmacenFocusLost
+        Border border = BorderFactory.createLineBorder(Color.GRAY);
+        TxtAlmacen.setBorder(border);
+    }//GEN-LAST:event_TxtAlmacenFocusLost
+
+    private void BtnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnLimpiarActionPerformed
+        opCancelar();
+    }//GEN-LAST:event_BtnLimpiarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -621,9 +890,10 @@ public class DlogInterfacesFacturaVenta extends javax.swing.JDialog {
     private javax.swing.JButton BtnLimpiar;
     private com.toedter.calendar.JDateChooser DateFechaActual;
     private javax.swing.JLabel LbAceptar;
-    public static javax.swing.JLabel LbClienteId;
     private javax.swing.JLabel LbFondo;
+    public static javax.swing.JLabel LbIdAlmacen;
     public static javax.swing.JLabel LbIdArticulo;
+    public static javax.swing.JLabel LbIdCliente;
     private javax.swing.JLabel LbNuevo;
     private javax.swing.JLabel LbNuevoArticulo;
     private javax.swing.JLabel LbNumeroFactura;
